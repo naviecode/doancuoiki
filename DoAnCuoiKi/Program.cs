@@ -8,8 +8,15 @@ namespace DoAnCuoiKi
     {
 
         #region Const
-        const string FilePathProject = @"..\..\..\Data\project";
-        const string FilePathTask = @"..\..\..\Data\task";
+        const string FilePathProject = @"..\..\..\Data\project\";
+        const string FilePathTask = @"..\..\..\Data\task\";
+
+
+        const string NOT_START = "Chưa bắt đầu";
+        const string IN_PROGRESS = "Đang tiến hành";
+        const string PENDING = "Đang chờ";
+        const string DELAY = "Bị trễ";
+        const string DONE = "Hoàn thành";
         #endregion
 
         #region Struct
@@ -37,7 +44,7 @@ namespace DoAnCuoiKi
         #endregion
 
         #region Function
-        static void NhapLieuDuAn(List<PROJECT> projects)
+        static void NhapLieuDuAn(List<PROJECT> projects, List<TASK> tasks)
         {
             string tiepTuc;
             string tiepTucCV;
@@ -50,13 +57,14 @@ namespace DoAnCuoiKi
                 prN.mo_ta = KiemTraDoDaiNhapLieu("mô tả");
                 prN.nguoi_quan_ly = KiemTraDoDaiNhapLieu("người quản lý");
                 prN.gia_tien = KiemTraDuLieuSo("giá tiền");
-                prN.trang_thai = "CHƯA LÀM";
-                prN.ngay_bat_dau = KiemTraDuLieuThoiGian("thời gian bắt đầu dự án (DD/MM/YYYY)");
-                prN.ngay_ket_thuc = KiemTraDuLieuThoiGian("thời gian bắt đầu dự án (DD/MM/YYYY)");
+                prN.trang_thai = NOT_START;
+                prN.ngay_bat_dau = KiemTraDuLieuThoiGian("ngày bắt đầu (dd/MM/yyyy)");
+                prN.ngay_ket_thuc = KiemTraDuLieuThoiGian("ngày kết thúc (dd/MM/yyyy)");
+                prN.tasks = new List<TASK>();
 
 
                 //ràn buộc ngày bắt đầu phải < ngày kết thúc => Hàm bổ sung
-                Console.Write("Bạn có muốn nhập công việc cho dự án này không?: (Y/N)");
+                Console.Write("Bạn có muốn nhập công việc cho dự án này không (Y/N)?: ");
                 tiepTucCV = Console.ReadLine();
                 if(tiepTucCV.ToUpper() == "Y")
                 {
@@ -66,17 +74,20 @@ namespace DoAnCuoiKi
                         tN.du_an_dang_thuc_hien = prN.ten_du_an;
                         tN.noi_dung_nhiem_vu = KiemTraDoDaiNhapLieu("nội dung công việc");
                         tN.nguoi_lam = KiemTraDoDaiNhapLieu("người làm phụ trách");
-                        tN.ngay_bat_dau_lam = KiemTraDuLieuThoiGian("hạn hoàn thành công việc");
+                        tN.ngay_bat_dau_lam = KiemTraDuLieuThoiGian("ngày bắt đầu thực hiện");
                         tN.thoi_han_hoan_thanh = KiemTraDuLieuThoiGian("hạn hoàn thành công việc");
+                        tN.trang_thai_cong_viec = NOT_START;
                         prN.tasks.Add(tN);
-                        Console.Write("Bạn có muốn nhập thêm công việc cho dự án này không?: (Y/N)");
+                        tasks.Add(tN);
+
+                        Console.Write("Bạn có muốn nhập thêm công việc cho dự án này không (Y/N)?: ");
                         tiepTucCV = Console.ReadLine();
                     } while (tiepTucCV.ToUpper() == "Y" ? true : false);
                 }    
                 
                 
                 projects.Add(prN);
-                Console.Write("Bạn có muốn nhập thêm dự án không?: (Y/N)");
+                Console.Write("Bạn có muốn nhập thêm dự án không (Y/N)?: ");
                 tiepTuc = Console.ReadLine();
             } while (tiepTuc.ToUpper() == "Y" ? true : false);
         }
@@ -94,7 +105,7 @@ namespace DoAnCuoiKi
                 //+ Có task là đang start
                 //+ Ngày hiện tại > ngày kết thúc and các task chưa complete thì dự án trễ ngược lại thì done
                 
-                Console.WriteLine("| {0,-12} | {1,-26} | {2,-26} | {3,-12} | {4,-12} | {5,-12} | {6,-12} |", prj.ma_du_an, prj.ten_du_an, prj.mo_ta, prj.trang_thai, prj.ngay_bat_dau, prj.ngay_ket_thuc, FormatNumber(prj.gia_tien));
+                Console.WriteLine("| {0,-12} | {1,-26} | {2,-26} | {3,-12} | {4,-12} | {5,-12} | {6,-13} |", prj.ma_du_an, prj.ten_du_an, prj.mo_ta, prj.trang_thai, prj.ngay_bat_dau.ToShortDateString(), prj.ngay_ket_thuc.ToShortDateString(), FormatNumber(prj.gia_tien));
                 Console.WriteLine("|-------------------------------------------------------------------------------------------------------------------------------------|");
             }
 
@@ -116,33 +127,30 @@ namespace DoAnCuoiKi
                 foreach (PROJECT prj in projects)
                 {
                     Console.WriteLine("| {0,-6} | {1,-12} | {2,-26} | {3,-12} | {4,-12} |", stt, prj.ma_du_an, prj.ten_du_an, prj.ngay_bat_dau, prj.ngay_ket_thuc);
+                    Console.WriteLine("*-----------------------------------------------------------------------------------*");
                     stt++;
                 }
-                Console.WriteLine("*-----------------------------------------------------------------------------------*");
-
-                maDuAn = KiemTraDuLieuSo("mã dự án cần thêm công việc", 0);
-
-                for (int i = 0; i < projects.Count; i++)
+                maDuAn = KiemTraDuLieuSo("mã dự án cần thêm công việc");
+                
+                foreach (var item in projects)
                 {
-                    if(projects[i].ma_du_an == maDuAn)
+                    if(item.ma_du_an == maDuAn)
                     {
                         TASK taskNew = new TASK();
                         taskNew.nguoi_lam = KiemTraDoDaiNhapLieu("tên người làm công việc này");
                         taskNew.noi_dung_nhiem_vu = KiemTraDoDaiNhapLieu("nội dung công việc cần làm");
                         taskNew.thoi_han_hoan_thanh = KiemTraDuLieuThoiGian("thời gian hoàn thành");
-                        taskNew.trang_thai_cong_viec = KiemTraDoDaiNhapLieu("trạng thái công việc hiện tại");
-                        projects[i].tasks.Add(taskNew);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Không tìm thấy mã dự án đã nhập!");
+                        taskNew.ngay_bat_dau_lam = KiemTraDuLieuThoiGian("thời gian bắt đầu thực hiện");
+                        taskNew.thoi_han_hoan_thanh = KiemTraDuLieuThoiGian("thời gian hoàn thành công việc");
+                        taskNew.trang_thai_cong_viec = NOT_START;
+                        tasks.Add(taskNew);
+                        item.tasks.Add(taskNew);
                     }
                 }
-                
-                
 
 
-                Console.Write("Bạn có muốn nhập thêm công việc cho dự án không?: (Y/N)");
+
+                Console.Write("Bạn có muốn nhập thêm công việc cho dự án không(Y/N)?: ");
                 tiepTuc = Console.ReadLine();
             } while (tiepTuc.ToUpper() == "Y" ? true : false);
         }
@@ -162,29 +170,35 @@ namespace DoAnCuoiKi
                 Console.WriteLine("*-------------------------------------------------------------------------------------------------------------------------------------*");
                 stt++;
             }
+
+
+
+            //cần làm
+            Console.WriteLine("Xem chi tiết công việc của dự án");
         }
         
         static void DocFileTxt()
         {
-            string filePath = FilePathProject + "file.txt";
+
+            string fileName = KiemTraDoDaiNhapLieu("tên file");
+            string filePath = FilePathProject + fileName;
+
             string[] lines;
-            string str;
             if (System.IO.File.Exists(filePath))
             {
                 lines = System.IO.File.ReadAllLines(filePath);
+                string[] data;
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    Console.WriteLine("Line {0}: {1}", i, lines[i]);
+                    PROJECT prj = new PROJECT();
+                    data = lines[i].Split(",");
+                    
                 }
-                Console.WriteLine();
-                str = System.IO.File.ReadAllText(filePath);
-                Console.WriteLine("String: {0}", str);
+
             }
             else
             {
-                System.IO.File.Create(filePath);
-
-                Console.WriteLine("File does not exist");
+                Console.WriteLine("File không tồn tại");
             }
         }
         static void GhiFileTxt()
@@ -263,13 +277,13 @@ namespace DoAnCuoiKi
             DateTime reuslt = DateTime.Now;
             string str;
             bool checkDate = false;
-        nhaplai:
+            nhaplai:
             Console.Write("Nhập {0}:", text);
             str = Console.ReadLine();
             string[] arrStr = str.Split("/");
             if (arrStr.Length == 3)
             {
-                checkDate = DateTime.TryParse(arrStr[0] + "/" + arrStr[1] + "/" + arrStr[2], out reuslt);
+                checkDate = DateTime.TryParse(arrStr[1] + "/" + arrStr[0] + "/" + arrStr[2], out reuslt);
             }
 
             if (!checkDate)
@@ -285,28 +299,58 @@ namespace DoAnCuoiKi
 
             return "";
         }
+        
+        static bool isDate(string data)
+        {
+            DateTime reuslt = DateTime.Now;
+            bool checkDate = false;
+            string[] arrStr = data.Split("/");
+            if (arrStr.Length == 3)
+            {
+                checkDate = DateTime.TryParse(arrStr[1] + "/" + arrStr[0] + "/" + arrStr[2], out reuslt);
+            }
+            else
+            {
+                return checkDate;
+            }
+
+            return checkDate;
+        }
+
+        static bool isNumber(string data)
+        {
+            bool ktr = false;
+            double result = 0;
+
+            ktr = double.TryParse(Console.ReadLine(), out result);
+
+            return ktr;
+        }
+        
         #endregion
 
         #region Menu
         static void MenuDuAn()
         {
             Console.WriteLine("**\t   a. Thêm mới dự án                             **");
-            Console.WriteLine("**\t   b. Chỉnh sửa dự án                            **");
-            Console.WriteLine("**\t   c. Xóa dự án                                  **");
-            Console.WriteLine("**\t   d. Hiển thị các dự án đang có                 **");
-            Console.WriteLine("**\t   e. Các loại tìm kiếm                          **");
-            Console.WriteLine("**\t   f. Các cách sắp xếp                           **");
-            Console.WriteLine("**\t   g. Trở về                                     **");
+            Console.WriteLine("**\t   b. Chỉnh sửa thông tin dự án                  **");
+            Console.WriteLine("**\t   c. Cập nhập trang thái dự án                  **");
+            Console.WriteLine("**\t   d. Xóa dự án                                  **");
+            Console.WriteLine("**\t   e. Hiển thị các dự án đang có                 **");
+            Console.WriteLine("**\t   f. Các loại tìm kiếm                          **");
+            Console.WriteLine("**\t   g. Các cách sắp xếp                           **");
+            Console.WriteLine("**\t   h. Trở về                                     **");
         }
         static void MenuCongViec()
         {
             Console.WriteLine("**\t   a. Thêm mới công việc                         **");
             Console.WriteLine("**\t   b. Chỉnh sửa công việc                        **");
-            Console.WriteLine("**\t   c. Xóa công việc                              **");
-            Console.WriteLine("**\t   d. Hiển thị công việc đang có                 **");
-            Console.WriteLine("**\t   e. Các loại tìm kiếm                          **");
-            Console.WriteLine("**\t   f. Các cách sắp xếp                           **");
-            Console.WriteLine("**\t   g. Trở về                                     **");
+            Console.WriteLine("**\t   c. Cập nhập trang thái dự án                  **");
+            Console.WriteLine("**\t   d. Xóa công việc                              **");
+            Console.WriteLine("**\t   e. Hiển thị công việc đang có                 **");
+            Console.WriteLine("**\t   f. Các loại tìm kiếm                          **");
+            Console.WriteLine("**\t   g. Các cách sắp xếp                           **");
+            Console.WriteLine("**\t   h. Trở về                                     **");
 
         }
         //cân nhắc có nên thêm không
@@ -391,20 +435,22 @@ namespace DoAnCuoiKi
                     switch (luaChon.ToLower())
                     {
                         case "a":
-                            NhapLieuDuAn(lstProject);
+                            NhapLieuDuAn(lstProject , lstTask);
                             break;
                         case "b":
-                            HienThiDuLieuDuAn(lstProject);
                             break;
                         case "c":
                             break;
                         case "d":
                             break;
                         case "e":
+                            HienThiDuLieuDuAn(lstProject);
                             break;
                         case "f":
                             break;
                         case "g":
+                            break;
+                        case "h":
                             isDuAn = false;
                             Console.Clear();
                             goto troVe;
@@ -424,17 +470,19 @@ namespace DoAnCuoiKi
                             NhapLieuCongViec(lstProject, lstTask);
                             break;
                         case "b":
-                            HienThiCongViecTrongDuAn(lstTask);
                             break;
                         case "c":
                             break;
                         case "d":
+                            HienThiCongViecTrongDuAn(lstTask);
                             break;
                         case "e":
                             break;
                         case "f":
                             break;
                         case "g":
+                            break;
+                        case "h":
                             isCongViec = false;
                             Console.Clear();
                             goto troVe;
@@ -474,7 +522,8 @@ namespace DoAnCuoiKi
 
         static void Main(string[] args)
         {
-            ChuongTrinhQuanLyDuAn();
+            //ChuongTrinhQuanLyDuAn();
+            DocFileTxt();
         }
     }
 }
