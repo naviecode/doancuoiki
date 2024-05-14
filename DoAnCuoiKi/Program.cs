@@ -56,18 +56,24 @@ namespace DoAnCuoiKi
 
 
                 //ràn buộc ngày bắt đầu phải < ngày kết thúc => Hàm bổ sung
-                do
+                Console.Write("Bạn có muốn nhập công việc cho dự án này không?: (Y/N)");
+                tiepTucCV = Console.ReadLine();
+                if(tiepTucCV.ToUpper() == "Y")
                 {
-                    TASK tN = new TASK();
-                    tN.du_an_dang_thuc_hien = prN.ten_du_an;
-                    tN.noi_dung_nhiem_vu = KiemTraDoDaiNhapLieu("nội dung công việc");
-                    tN.nguoi_lam = KiemTraDoDaiNhapLieu("người làm phụ trách");
-                    tN.ngay_bat_dau_lam = KiemTraDuLieuThoiGian("hạn hoàn thành công việc");
-                    tN.thoi_han_hoan_thanh = KiemTraDuLieuThoiGian("hạn hoàn thành công việc");
-                    prN.tasks.Add(tN);
-                    Console.Write("Bạn có muốn nhập thêm công việc cho dự án này không?: (Y/N)");
-                    tiepTucCV = Console.ReadLine();
-                } while (tiepTucCV.ToUpper() == "Y" ? true : false);
+                    do
+                    {
+                        TASK tN = new TASK();
+                        tN.du_an_dang_thuc_hien = prN.ten_du_an;
+                        tN.noi_dung_nhiem_vu = KiemTraDoDaiNhapLieu("nội dung công việc");
+                        tN.nguoi_lam = KiemTraDoDaiNhapLieu("người làm phụ trách");
+                        tN.ngay_bat_dau_lam = KiemTraDuLieuThoiGian("hạn hoàn thành công việc");
+                        tN.thoi_han_hoan_thanh = KiemTraDuLieuThoiGian("hạn hoàn thành công việc");
+                        prN.tasks.Add(tN);
+                        Console.Write("Bạn có muốn nhập thêm công việc cho dự án này không?: (Y/N)");
+                        tiepTucCV = Console.ReadLine();
+                    } while (tiepTucCV.ToUpper() == "Y" ? true : false);
+                }    
+                
                 
                 projects.Add(prN);
                 Console.Write("Bạn có muốn nhập thêm dự án không?: (Y/N)");
