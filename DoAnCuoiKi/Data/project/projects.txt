@@ -1,0 +1,8 @@
+00001, Quản lý tài sản, tài sản quá nhiều, 01/01/2002, 01/01/2002, Quang Son, 2000000
+00002, Quản lý đất, tài sản quá nhiều, 01/01/2002, 01/01/2002, Quang Xu, 2000000
+00003, Quản lý đồ da dụng, tài sản quá nhiều, 01/01/2002, 01/01/2002, Quang Con, 2000000
+00004, Quản lý trái cây, tài sản quá nhiều, 01/01/2002, 01/01/2002, Quang Don, 2000000
+00005, Quản lý xe, tài sản quá nhiều, 01/01/2002, 01/01/2002, Quang Von, 2000000
+00006, Quản lý nhà, tài sản quá nhiều, 01/01/2002, 01/01/2002, Quang Pon, 2000000
+00007, Quản lý ống nước, tài sản quá nhiều, 01/01/2002, 01/01/2002, Quang Lon, 2000000
+00008, Quản lý tiền, tài sản quá nhiều, 01/01/2002, 01/01/2002, Quang Mon, 2000000
