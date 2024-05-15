@@ -11,16 +11,15 @@ namespace DoAnCuoiKi
         const string FilePathProject = @"..\..\..\Data\project\";
         const string FilePathTask = @"..\..\..\Data\task\";
 
-
         const string NOT_START = "Chưa bắt đầu";
         const string IN_PROGRESS = "Đang tiến hành";
-        const string PENDING = "Đang chờ";
-        const string DELAY = "Bị trễ";
         const string DONE = "Hoàn thành";
+        const string DELAY = "Bị trễ";
+
         #endregion
 
         #region Struct
-        struct PROJECT
+        class PROJECT
         {
             public int ma_du_an;
             public string ten_du_an;
@@ -32,7 +31,7 @@ namespace DoAnCuoiKi
             public double gia_tien;
             public List<TASK> tasks;
         }
-        struct TASK
+        class TASK
         {
             public int ma_cong_viec;
             public string du_an_dang_thuc_hien;
@@ -114,6 +113,80 @@ namespace DoAnCuoiKi
             //cần làm
             Console.WriteLine("Xem chi tiết công việc của dự án");
 
+        }
+        static void CapNhapDuAn(List<PROJECT> projects)
+        {
+            string tiepTuc;
+            do
+            {
+                int maDuAn = KiemTraDuLieuSo("mã dự án cần điều chỉnh");
+                PROJECT projectSearch = projects.Find(x => x.ma_du_an == maDuAn);
+                if (projects.Contains(projectSearch))
+                {
+                    if (projectSearch.trang_thai == DONE)
+                    {
+                        Console.WriteLine("Dự án đã hoàn thành nên không thê điều chỉnh được nữa");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Nhập thông tin điều chỉnh dự án");
+                        projectSearch.ten_du_an = KiemTraDoDaiNhapLieu("tên dự án");
+                        projectSearch.mo_ta = KiemTraDoDaiNhapLieu("mô tả dự án");
+                        projectSearch.nguoi_quan_ly = KiemTraDoDaiNhapLieu("người quản lý dự án");
+                        Console.WriteLine("Cập nhập thành công!");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Không tìm thấy mã dự án này");
+                }
+                Console.Write("Bạn có muốn cập nhập thêm thông tin dự án không (Y/N)?: ");
+                tiepTuc = Console.ReadLine();
+
+            } while (tiepTuc.ToUpper() == "Y" ? true : false);
+            
+            
+           
+        }
+        static void CapNhapTrangThai(List<PROJECT> projects)
+        {
+        
+            int maDuAn = KiemTraDuLieuSo("mã dự án cập nhập trạng thái");
+            PROJECT projectSearch = projects.Find(x => x.ma_du_an == maDuAn);
+            if (projects.Contains(projectSearch))
+            {
+                Console.WriteLine("Nhập trạng thái mới cho dự án: ");
+                Console.WriteLine("N: chưa bắt đầu");
+                Console.WriteLine("P: đang tiến hành");
+                Console.WriteLine("D: bị trễ");
+                Console.WriteLine("A: Hoàn thành");
+                string trangThai = KiemTraDoDaiNhapLieu("trạng thái điểu chỉnh theo ký tự (N-P-D-A) tương ứng");
+                if(trangThai.ToUpper() == "N")
+                {
+                    projectSearch.trang_thai = NOT_START;
+                }
+                else if (trangThai.ToUpper() == "P")
+                {
+                    projectSearch.trang_thai = IN_PROGRESS;
+                }
+                else if (trangThai.ToUpper() == "D")
+                {
+                    projectSearch.trang_thai = DELAY;
+                }
+                else if (trangThai.ToUpper() == "A")
+                {
+                    projectSearch.trang_thai = DONE;
+                }
+                else
+                {
+                    Console.WriteLine("Trạng thái chọn không hợp lệ");
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("Không tìm thấy mã dự án này");
+            }
         }
         static void NhapLieuCongViec(List<PROJECT> projects, List<TASK> tasks)
         {
@@ -490,8 +563,18 @@ namespace DoAnCuoiKi
             string[] arrStr = data.Split("/");
             return DateTime.Parse(arrStr[1] + "/" + arrStr[0] + "/" + arrStr[2]); ;
         }
-        
+
         #endregion
+        /**
+         * Những thứ cần làm:
+         * Viết hàm validate so sánh ngày nào bé hơn 
+         * Format giá tiền có dấu phẩy và thêm VND
+         * Khi chọn tìm kiếm cho người dùng chọn tìm kiếm theo cột nào, và sau đó sẽ dùng tìm kiếm gì để tìm kiếm
+         * Khi chọn sắp xếp cho người dùng chọn sắp xếp theo cột nào, và sau đó sắp xếp xong in ra
+         * Hiển thị file đã có trong thư mục, và kiểm tra file import phải ở dạng txt
+         * Điều chỉnh thêm thoát nhanh bằng Nút ESC thay vì chọn option
+         * 
+         * **/
 
         #region Menu
         static void MenuDuAn()
@@ -600,8 +683,10 @@ namespace DoAnCuoiKi
                             NhapLieuDuAn(lstProject , lstTask);
                             break;
                         case "b":
+                            CapNhapDuAn(lstProject);
                             break;
                         case "c":
+                            CapNhapTrangThai(lstProject);
                             break;
                         case "d":
                             break;
