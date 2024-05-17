@@ -18,7 +18,7 @@ namespace DoAnCuoiKi
 
         #endregion
 
-        #region Struct
+        #region Class
         class PROJECT
         {
             public int ma_du_an;
@@ -51,19 +51,19 @@ namespace DoAnCuoiKi
             do
             {
                 PROJECT prN = new PROJECT();
-                
-                prN.ma_du_an = KiemTraDuLieuSo("mã dự án");
+
+                prN.ma_du_an = KiemTraMaDuAn(projects);
                 prN.ten_du_an = KiemTraDoDaiNhapLieu("tên dự án");
                 prN.mo_ta = KiemTraDoDaiNhapLieu("mô tả");
                 prN.nguoi_quan_ly = KiemTraDoDaiNhapLieu("người quản lý");
                 prN.gia_tien = KiemTraDuLieuSo("giá tiền");
                 prN.trang_thai = NOT_START;
                 prN.ngay_bat_dau = KiemTraDuLieuThoiGian("ngày bắt đầu (dd/MM/yyyy)");
-                prN.ngay_ket_thuc = KiemTraDuLieuThoiGian("ngày kết thúc (dd/MM/yyyy)");
+                prN.ngay_ket_thuc = SoSanhNgay(prN.ngay_bat_dau, "ngày bắt đầu", "ngày kết thúc", "lớn");
                 prN.tasks = new List<TASK>();
 
-
                 //ràn buộc ngày bắt đầu phải < ngày kết thúc => Hàm bổ sung
+
                 Console.Write("Bạn có muốn nhập công việc cho dự án này không (Y/N)?: ");
                 tiepTucCV = Console.ReadLine();
                 if(tiepTucCV.ToUpper() == "Y")
@@ -76,7 +76,7 @@ namespace DoAnCuoiKi
                         tN.noi_dung_nhiem_vu = KiemTraDoDaiNhapLieu("nội dung công việc");
                         tN.nguoi_lam = KiemTraDoDaiNhapLieu("người làm phụ trách");
                         tN.ngay_bat_dau_lam = KiemTraDuLieuThoiGian("ngày bắt đầu thực hiện");
-                        tN.thoi_han_hoan_thanh = KiemTraDuLieuThoiGian("hạn hoàn thành công việc");
+                        tN.thoi_han_hoan_thanh = SoSanhNgay(tN.ngay_bat_dau_lam, "ngày bắt đầu thực hiện", "ngày hoàn thành", "lớn");
                         tN.trang_thai_cong_viec = NOT_START;
                         prN.tasks.Add(tN);
                         tasks.Add(tN);
@@ -152,6 +152,7 @@ namespace DoAnCuoiKi
         {
         
             int maDuAn = KiemTraDuLieuSo("mã dự án cập nhập trạng thái");
+
             PROJECT projectSearch = projects.Find(x => x.ma_du_an == maDuAn);
             if (projects.Contains(projectSearch))
             {
@@ -187,6 +188,129 @@ namespace DoAnCuoiKi
             {
                 Console.WriteLine("Không tìm thấy mã dự án này");
             }
+        }
+        
+        static void TimKiemThongTinDuAn(List<PROJECT> projects)
+        {
+            string tiepTuc;
+            string luaChonTimKiem;
+            string thuatToanTimKiem;
+            List<PROJECT> result = new List<PROJECT>();
+            do
+            {
+                Console.WriteLine("Bạn muốn tìm kiếm theo: ");
+                Console.WriteLine("a. Mã dự án");
+                Console.WriteLine("b. Tên dự án");
+                Console.WriteLine("c. Trạng thái");
+                Console.WriteLine("d. Người quản lý");
+                Console.WriteLine("f. Giá tiền 0 - ?");
+                luaChonTimKiem = KiemTraDoDaiNhapLieu("lựa chọn");
+                thuatToanTimKiem = KiemTraDoDaiNhapLieu("chọn thuật toán tìm kiếm bạn muốn dùng (a: Tuần tự | b: Nhị phân)");
+                switch (luaChonTimKiem.ToUpper())
+                {
+                    case "a":
+                        int maDuAnSearch = KiemTraDuLieuSo("mã dự án cần");
+                        result = TimKiemTuyenTinh(projects, "MA_DU_AN", maDuAnSearch.ToString());
+                        break;
+                    case "b":
+                        string tenDuAnSearch = KiemTraDoDaiNhapLieu("tên dư án cần");
+                        result = TimKiemTuyenTinh(projects, "TEN_DU_AN", tenDuAnSearch);
+                        break;
+                    case "c":
+                        Console.WriteLine("Chọn trạng thái (N: Chưa bắt đầu | I: Đang tiến hành | D: Bị trễ | A: Hoàn thành");
+                        string trangThaiSearch = KiemTraDoDaiNhapLieu("trạng thái");
+                        if (trangThaiSearch.ToUpper() == "N") trangThaiSearch = NOT_START;
+                        else if (trangThaiSearch.ToUpper() == "I") trangThaiSearch = IN_PROGRESS;
+                        else if (trangThaiSearch.ToUpper() == "D") trangThaiSearch = DELAY;
+                        else if (trangThaiSearch.ToUpper() == "A") trangThaiSearch = DONE;
+
+                        result = TimKiemTuyenTinh(projects, "TRANG_THAI", trangThaiSearch);
+                        break;
+                    case "d":
+                        string tenNguoiQuanLy = KiemTraDoDaiNhapLieu("tên người quản lý");
+                        result = TimKiemTuyenTinh(projects, "NGUOI_QUAN_LY", tenNguoiQuanLy);
+                        break;
+                    case "f":
+                        int giaTien = KiemTraDuLieuSo("gia tien");
+                        result = TimKiemTuyenTinh(projects, "GIA_TIEN", giaTien.ToString());
+                        break;
+                    default:
+                        Console.WriteLine("Không có lựa chọn này");
+                        break;
+                }
+
+                if(result.Count > 0)
+                {
+                    Console.WriteLine("DANH SÁCH DỰ ÁN ĐƯỢC TÌM THẤY");
+                    HienThiDuLieuDuAn(result);
+                }
+                else
+                {
+                    Console.WriteLine("Không tìm thấy được dự án nào phù hợp thông tin yêu cầu");
+                }
+                Console.Write("Bạn có muốn tìm kiếm thêm thông tin của dự án không (Y/N)?: ");
+                tiepTuc = Console.ReadLine();
+
+            } while (tiepTuc.ToUpper() == "Y" ? true : false);
+
+        }
+        static void SapXepThongTinDuAn(List<PROJECT> projects)
+        {
+            string tiepTuc;
+            string luaChonSapXep;
+            string thuatToanSapXep;
+            List<PROJECT> result = new List<PROJECT>();
+            do
+            {
+                Console.WriteLine("Bạn muốn tìm kiếm theo: ");
+                Console.WriteLine("a. Mã dự án");
+                Console.WriteLine("b. Tên dự án");
+                Console.WriteLine("c. Trạng thái");
+                Console.WriteLine("d. Ngày bắt đầu");
+                Console.WriteLine("e. Ngày kết thúc");
+                Console.WriteLine("f. Người quản lý");
+                Console.WriteLine("g. Giá tiền");
+                luaChonSapXep = KiemTraDoDaiNhapLieu("lựa chọn");
+                thuatToanSapXep = KiemTraDoDaiNhapLieu("chọn thuật toán sắp xếp bạn muốn dùng (a: Sắp xếp chèn | b: Sắp xếp lựa chọn | c: Sắp xếp nổi bọt | d: Sắp xếp trộn | e: Sắp xếp nhanh )");
+                switch (thuatToanSapXep.ToUpper())
+                {
+                    case "a":
+                        break;
+                    case "b":
+                       
+                        break;
+                    case "c":
+                       
+                        break;
+                    case "d":
+                       
+                        break;
+                    case "e":
+
+                        break;
+                    case "f":
+                        break;
+                    case "g":
+
+                        break;
+                    default:
+                        Console.WriteLine("Không có lựa chọn này");
+                        break;
+                }
+
+                if (result.Count > 0)
+                {
+                    Console.WriteLine("DANH SÁCH DỰ ÁN ĐÃ ĐƯỢC SẮP XẾP");
+                    HienThiDuLieuDuAn(result);
+                }
+                else
+                {
+                    Console.WriteLine("Không tìm thấy được dự án nào phù hợp để sắp xếp");
+                }
+                Console.Write("Bạn có muốn tiếp tục thao tác sắp xếp không (Y/N)?: ");
+                tiepTuc = Console.ReadLine();
+
+            } while (tiepTuc.ToUpper() == "Y" ? true : false);
         }
         static void NhapLieuCongViec(List<PROJECT> projects, List<TASK> tasks)
         {
@@ -253,7 +377,7 @@ namespace DoAnCuoiKi
 
        
         }
-        
+  
         static void DocFileTxtDuAn(List<PROJECT> projects)
         {
             bool checkDataErr = false;
@@ -446,7 +570,52 @@ namespace DoAnCuoiKi
             } while (tiepTuc.ToUpper() == "Y" ? true : false);
         }
         
+
+        static List<PROJECT> TimKiemTuyenTinh(List<PROJECT> projects ,string fieldSearch, string timKiem)
+        {
+            List<PROJECT> result = new List<PROJECT>();
+            foreach (var item in projects)
+            {
+                if((fieldSearch.ToUpper() == "MA_DU_AN" && item.ma_du_an == int.Parse(timKiem))
+                    || (fieldSearch.ToUpper() == "TEN_DU_AN" && item.ten_du_an.Contains(timKiem))
+                    || (fieldSearch.ToUpper() == "NGAY" && DateTime.Parse(timKiem) > item.ngay_bat_dau && DateTime.Parse(timKiem) < item.ngay_ket_thuc)
+                    || (fieldSearch.ToUpper() == "TRANG_THAI" && item.trang_thai == timKiem)
+                    || (fieldSearch.ToUpper() == "NGUOI_QUAN_LY" && item.nguoi_quan_ly == timKiem)
+                    || (fieldSearch.ToUpper() == "GIA_TIEN" && item.gia_tien == double.Parse(timKiem))
+                )
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result;
+        }
+        static List<PROJECT> TimKiemNhiPhan(List<PROJECT> projects)
+        {
+            return null;
+        }
+        static void SapXepChen(List<PROJECT> projects)
+        {
+
+        }
+        static void SapXepLuaChon(List<PROJECT> projects)
+        {
+
+        }
+        static void SapXepNoiBot(List<PROJECT> projects)
+        {
+
+        }
+        static void SapXepTron(List<PROJECT> projects)
+        {
+
+        }
+        static void SapXepNhanh(List<PROJECT> projects)
+        {
+
+        }
         #endregion
+
 
         #region Validation
         static double FormatNumber(double number)
@@ -501,6 +670,19 @@ namespace DoAnCuoiKi
 
             return result;
         }
+        static int KiemTraMaDuAn(List<PROJECT> projects)
+        {
+            nhapLai:
+            int ma_du_an = KiemTraDuLieuSo("mã dự án");
+            PROJECT timKiem = projects.Find(x => x.ma_du_an == ma_du_an);
+            if(projects.Contains(timKiem))
+            {
+                Console.WriteLine("Mã dự án đã tồn tại");
+                goto nhapLai;
+            }    
+
+            return ma_du_an;
+        }
         static DateTime KiemTraDuLieuThoiGian(string text = null)
         {
             DateTime reuslt = DateTime.Now;
@@ -523,15 +705,34 @@ namespace DoAnCuoiKi
 
             return reuslt;
         }
-        static string KiemTraMaDuAn(List<PROJECT> project, string data)
+        static DateTime SoSanhNgay(DateTime fromDate,string fromDateStr = null, string toDateStr = null, string operatorStr = null)
         {
 
-            return "";
-        }
-        static DateTime SoSanhNgay(string operatorStr, DateTime dateSs, string text = null )
-        {
+            DateTime reuslt = DateTime.Now;
+            string str;
+            bool checkDate = false;
+            nhaplai:
+            Console.Write("Nhập {0}:", fromDateStr);
+            str = Console.ReadLine();
+            string[] arrStr = str.Split("/");
+            if (arrStr.Length == 3)
+            {
+                checkDate = DateTime.TryParse(arrStr[1] + "/" + arrStr[0] + "/" + arrStr[2], out reuslt);
+            }
 
-            return DateTime.Now;
+            if (!checkDate)
+            {
+                Console.WriteLine("Nhập sai dữ liệu ngày!");
+                goto nhaplai;
+            }
+
+            if(reuslt < fromDate)
+            {
+                Console.WriteLine("Ngày {0} {1} hơn ngày {2}", fromDateStr,operatorStr, toDateStr);
+                goto nhaplai;
+            }    
+
+            return reuslt;
         }
         static bool isDate(string data)
         {
@@ -584,8 +785,8 @@ namespace DoAnCuoiKi
             Console.WriteLine("**\t   c. Cập nhập trang thái dự án                  **");
             Console.WriteLine("**\t   d. Xóa dự án                                  **");
             Console.WriteLine("**\t   e. Hiển thị các dự án đang có                 **");
-            Console.WriteLine("**\t   f. Các loại tìm kiếm                          **");
-            Console.WriteLine("**\t   g. Các cách sắp xếp                           **");
+            Console.WriteLine("**\t   f. Tìm kiếm thông tin dự án                   **");
+            Console.WriteLine("**\t   g. Sắp xếp dự án                              **");
             Console.WriteLine("**\t   h. Trở về                                     **");
         }
         static void MenuCongViec()
@@ -694,6 +895,7 @@ namespace DoAnCuoiKi
                             HienThiDuLieuDuAn(lstProject);
                             break;
                         case "f":
+                            TimKiemThongTinDuAn(lstProject);
                             break;
                         case "g":
                             break;
@@ -778,6 +980,7 @@ namespace DoAnCuoiKi
         static void Main(string[] args)
         {
             ChuongTrinhQuanLyDuAn();
+            Console.WriteLine("Dat ngu");
         }
     }
 }
