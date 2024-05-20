@@ -37,6 +37,7 @@ namespace DoAnCuoiKi.Function
                     do
                     {
                         TASK tN = new TASK();
+                        tN.ma_du_an = prN.ma_du_an; 
                         tN.ma_cong_viec = VALIDATION.KiemTraDuLieuSo("Nhập mã công việc");
                         tN.du_an_dang_thuc_hien = prN.ten_du_an;
                         tN.noi_dung_nhiem_vu = VALIDATION.KiemTraDoDaiNhapLieu("Nhập nội dung công việc: ");
@@ -63,23 +64,22 @@ namespace DoAnCuoiKi.Function
             string trangThai = "";
             if(projects.Count == 0)
             {
-                Console.WriteLine("Không có dự án nào được thêm !");
+                Console.WriteLine("Không có dự án nào có để hiển thị !");
                 return;
             }   
             
-            Console.WriteLine("*-------------------------------------------------------------------------------------------------------------------------------------------------------------*");
-            Console.WriteLine("|                                                                 THÔNG TIN CHI TIẾT CÁC DỰ ÁN                                                                |");
-            Console.WriteLine("*-------------------------------------------------------------------------------------------------------------------------------------------------------------*");
-            Console.WriteLine("| {0,-12} | {1,-26} | {2,-26} | {3,-12} | {4,-12} | {5,-20} | {6,-13} | {7,-12} |", "Mã dự án", "Tên dự án", "Mô tả", "Trạng thái","Người quản lý", "Ngày bắt đầu", "Ngày kết thúc", "Giá tiền");
-            Console.WriteLine("|-------------------------------------------------------------------------------------------------------------------------------------------------------------|");
+            Console.WriteLine("*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*");
+            Console.WriteLine("|                                                                     THÔNG TIN CHI TIẾT CÁC DỰ ÁN                                                                    |");
+            Console.WriteLine("*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*");
+            Console.WriteLine("| {0,-12} | {1,-26} | {2,-26} | {3,-12} | {4,-12} | {5,-20} | {6,-13} | {7,-20} |", COLUMN_PROJECT.MA_DU_AN, COLUMN_PROJECT.TEN_DU_AN, COLUMN_PROJECT.MO_TA, COLUMN_PROJECT.TRANG_THAI, COLUMN_PROJECT.NGUOI_QUAN_LY, COLUMN_PROJECT.NGAY_BAT_DAU, COLUMN_PROJECT.NGAY_KET_THUC, COLUMN_PROJECT.GIA_TIEN);
+            Console.WriteLine("|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|");
             foreach (var prj in projects)
             {
                 if (DateTime.Now > prj.ngay_ket_thuc) trangThai = STATUS.DELAY;
                 else trangThai = prj.trang_thai;
-                //+ Ngày hiện tại > ngày kết thúc and các task chưa complete thì dự án trễ ngược lại thì done
 
-                Console.WriteLine("| {0,-12} | {1,-26} | {2,-26} | {3,-12} | {4,-12} | {5,-21} | {6,-13} | {7,-12} |", prj.ma_du_an, prj.ten_du_an, prj.mo_ta, trangThai, prj.nguoi_quan_ly, prj.ngay_bat_dau.ToShortDateString(), prj.ngay_ket_thuc.ToShortDateString(), VALIDATION.FormatNumber(prj.gia_tien));
-                Console.WriteLine("|-------------------------------------------------------------------------------------------------------------------------------------------------------------|");
+                Console.WriteLine("| {0,-12} | {1,-26} | {2,-26} | {3,-12} | {4,-12} | {5,-21} | {6,-13} | {7,-20} |", prj.ma_du_an, prj.ten_du_an, prj.mo_ta, trangThai, prj.nguoi_quan_ly, prj.ngay_bat_dau.ToShortDateString(), prj.ngay_ket_thuc.ToShortDateString(), string.Format("{0:#,####} VND",prj.gia_tien));
+                Console.WriteLine("|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|");
             }
 
             //cần làm
@@ -88,41 +88,30 @@ namespace DoAnCuoiKi.Function
         }
         public static void CapNhapDuAn(List<PROJECT> projects)
         {
+            HienThiDuLieuDuAn(projects);
+            if (projects.Count == 0) return;
 
-            string tiepTuc;
-            do
+            int maDuAn = VALIDATION.KiemTraDuLieuSo("Nhập mã dự án cần điều chỉnh: ");
+            PROJECT projectSearch = projects.Find(x => x.ma_du_an == maDuAn);
+            if (projects.Contains(projectSearch))
             {
-                HienThiDuLieuDuAn(projects);
-                if (projects.Count == 0) return;
-
-                int maDuAn = VALIDATION.KiemTraDuLieuSo("Nhập mã dự án cần điều chỉnh: ");
-                PROJECT projectSearch = projects.Find(x => x.ma_du_an == maDuAn);
-                if (projects.Contains(projectSearch))
+                if (projectSearch.trang_thai == STATUS.DONE)
                 {
-                    if (projectSearch.trang_thai == STATUS.DONE)
-                    {
-                        Console.WriteLine("Dự án đã hoàn thành không thê điều chỉnh được nữa!");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Nhập thông tin điều chỉnh dự án");
-                        projectSearch.ten_du_an = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên dự án: ",true);
-                        projectSearch.mo_ta = VALIDATION.KiemTraDoDaiNhapLieu("Nhập mô tả dự án: ");
-                        projectSearch.nguoi_quan_ly = VALIDATION.KiemTraDoDaiNhapLieu("Người quản lý dự án: ",true);
-                        Console.WriteLine("Cập nhập thành công!");
-                    }
+                    Console.WriteLine("Dự án đã hoàn thành không thê điều chỉnh được nữa!");
                 }
                 else
                 {
-                    Console.WriteLine("Không tìm thấy mã dự án này!");
+                    Console.WriteLine("Nhập thông tin điều chỉnh dự án");
+                    projectSearch.ten_du_an = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên dự án: ", true);
+                    projectSearch.mo_ta = VALIDATION.KiemTraDoDaiNhapLieu("Nhập mô tả dự án: ");
+                    projectSearch.nguoi_quan_ly = VALIDATION.KiemTraDoDaiNhapLieu("Người quản lý dự án: ", true);
+                    Console.WriteLine("Cập nhập thành công!");
                 }
-
-                Console.Write("Bạn có muốn cập nhập thêm thông tin dự án không (Y/N)?: ");
-                tiepTuc = Console.ReadLine();
-
-            } while (tiepTuc.ToUpper() == "Y" ? true : false);
-
-
+            }
+            else
+            {
+                Console.WriteLine("Không tìm thấy mã dự án này!");
+            }
 
         }
         public static void CapNhapTrangThai(List<PROJECT> projects)
@@ -136,12 +125,18 @@ namespace DoAnCuoiKi.Function
             PROJECT projectSearch = projects.Find(x => x.ma_du_an == maDuAn);
             if (projects.Contains(projectSearch))
             {
+                if (DateTime.Now > projectSearch.ngay_ket_thuc)
+                {
+                    Console.WriteLine("Dự án đã bị trễ không thể cập nhập được nữa !");
+                    return;
+                }
+
                 Console.WriteLine("Nhập trạng thái mới cho dự án: ");
                 Console.WriteLine("N: chưa bắt đầu");
                 Console.WriteLine("P: đang tiến hành");
                 Console.WriteLine("D: bị trễ");
                 Console.WriteLine("A: Hoàn thành");
-                string trangThai = VALIDATION.KiemTraDoDaiNhapLieu("Nhập trạng thái điểu chỉnh theo ký tự (N-P-D-A) tương ứng", true);
+                string trangThai = VALIDATION.KiemTraDoDaiNhapLieu("Nhập trạng thái điểu chỉnh theo ký tự (N-P-D-A) tương ứng:", true);
                 if (trangThai.ToUpper() == "N")
                 {
                     projectSearch.trang_thai = STATUS.NOT_START;
@@ -199,138 +194,177 @@ namespace DoAnCuoiKi.Function
 
         public static void TimKiemThongTinDuAn(List<PROJECT> projects)
         {
-            string tiepTuc;
             string luaChonTimKiem;
             string thuatToanTimKiem;
             List<PROJECT> result = new List<PROJECT>();
-            do
+            Console.WriteLine("Bạn muốn tìm kiếm theo: ");
+            Console.WriteLine("a. Mã dự án");
+            Console.WriteLine("b. Tên dự án");
+            Console.WriteLine("c. Trạng thái");
+            Console.WriteLine("d. Người quản lý");
+            Console.WriteLine("f. Giá tiền");
+            Console.WriteLine("g. Ngày bắt đầu");
+            Console.WriteLine("h. Ngày kết thúc");
+            luaChonTimKiem = VALIDATION.KiemTraDoDaiNhapLieu("Nhập lựa chọn: ", true);
+            thuatToanTimKiem = VALIDATION.KiemTraDoDaiNhapLieu("Nhập chọn thuật toán tìm kiếm bạn muốn dùng (a: Tuần tự | b: Nhị phân | Khác: Tuần tự): ", true);
+            switch (luaChonTimKiem.ToUpper())
             {
-                Console.WriteLine("Bạn muốn tìm kiếm theo: ");
-                Console.WriteLine("a. Mã dự án");
-                Console.WriteLine("b. Tên dự án");
-                Console.WriteLine("c. Trạng thái");
-                Console.WriteLine("d. Người quản lý");
-                Console.WriteLine("f. Giá tiền");
-                Console.WriteLine("g. Ngày bắt đầu");
-                Console.WriteLine("h. Ngày kết thúc");
-                luaChonTimKiem = VALIDATION.KiemTraDoDaiNhapLieu("Nhập lựa chọn: ", true);
-                thuatToanTimKiem = VALIDATION.KiemTraDoDaiNhapLieu("Nhập chọn thuật toán tìm kiếm bạn muốn dùng (a: Tuần tự | b: Nhị phân): ",true);
-                switch (luaChonTimKiem.ToUpper())
-                {
-                    case "a":
-                        int maDuAnSearch = VALIDATION.KiemTraDuLieuSo("Nhập mã dự án cần tìm: ");
+                case "a":
+                    int maDuAnSearch = VALIDATION.KiemTraDuLieuSo("Nhập mã dự án cần tìm: ");
+                    if(thuatToanTimKiem == "b")
+                    {
+                        result = TimKiemNhiPhan(projects, COLUMN_PROJECT.MA_DU_AN, maDuAnSearch.ToString());
+                    }
+                    else
+                    {
                         result = TimKiemTuyenTinh(projects, COLUMN_PROJECT.MA_DU_AN, maDuAnSearch.ToString());
-                        break;
-                    case "b":
-                        string tenDuAnSearch = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên dự án cần tìm: ",true);
+                    }
+                    break;
+                case "b":
+                    string tenDuAnSearch = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên dự án cần tìm: ", true);
+                    if (thuatToanTimKiem == "b")
+                    {
+                        result = TimKiemNhiPhan(projects, COLUMN_PROJECT.TEN_DU_AN, tenDuAnSearch.ToString());
+                    }
+                    else
+                    {
                         result = TimKiemTuyenTinh(projects, COLUMN_PROJECT.TEN_DU_AN, tenDuAnSearch);
-                        break;
-                    case "c":
-                        Console.WriteLine("Chọn trạng thái (N: Chưa bắt đầu | I: Đang tiến hành | D: Bị trễ | A: Hoàn thành");
-                        string trangThaiSearch = VALIDATION.KiemTraDoDaiNhapLieu("Nhập trạng thái cần tìm: ",true);
-                        if (trangThaiSearch.ToUpper() == "N") trangThaiSearch = STATUS.NOT_START;
-                        else if (trangThaiSearch.ToUpper() == "I") trangThaiSearch = STATUS.IN_PROGRESS;
-                        else if (trangThaiSearch.ToUpper() == "D") trangThaiSearch = STATUS.DELAY;
-                        else if (trangThaiSearch.ToUpper() == "A") trangThaiSearch = STATUS.DONE;
+                    }
+                    break;
+                case "c":
+                    Console.WriteLine("Chọn trạng thái (N: Chưa bắt đầu | I: Đang tiến hành | D: Bị trễ | A: Hoàn thành ):");
+                    string trangThaiSearch = VALIDATION.KiemTraDoDaiNhapLieu("Nhập trạng thái cần tìm: ", true);
+                    if(trangThaiSearch.ToUpper() == "I") { 
+                        trangThaiSearch = STATUS.IN_PROGRESS; 
+                    }else if(trangThaiSearch.ToUpper() == "D") { 
+                        trangThaiSearch = STATUS.DELAY; 
+                    }else if(trangThaiSearch.ToUpper() == "A") {
+                        trangThaiSearch = STATUS.DONE;
+                    }else {
+                        trangThaiSearch = STATUS.NOT_START;
+                    }
+                    if (thuatToanTimKiem == "b")
+                    {
+                        result = TimKiemNhiPhan(projects, COLUMN_PROJECT.TRANG_THAI, trangThaiSearch.ToString());
+                    }
+                    else
+                    {
                         result = TimKiemTuyenTinh(projects, COLUMN_PROJECT.TRANG_THAI, trangThaiSearch);
-                        break;
-                    case "d":
-                        string tenNguoiQuanLy = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên người quản lý cần tìm: ", true);
+                    }
+                    
+                    break;
+                case "d":
+                    string tenNguoiQuanLy = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên người quản lý cần tìm: ", true);
+                    if (thuatToanTimKiem == "b")
+                    {
+                        result = TimKiemNhiPhan(projects, COLUMN_PROJECT.NGUOI_QUAN_LY, tenNguoiQuanLy.ToString());
+                    }
+                    else
+                    {
                         result = TimKiemTuyenTinh(projects, COLUMN_PROJECT.NGUOI_QUAN_LY, tenNguoiQuanLy);
-                        break;
-                    case "f":
-                        int giaTien = VALIDATION.KiemTraDuLieuSo("Nhập giá tiền cần tìm: ");
+                    }
+                    break;
+                case "f":
+                    int giaTien = VALIDATION.KiemTraDuLieuSo("Nhập giá tiền cần tìm: ");
+                    if (thuatToanTimKiem == "b")
+                    {
+                        result = TimKiemNhiPhan(projects, COLUMN_PROJECT.GIA_TIEN, giaTien.ToString());
+                    }
+                    else
+                    {
                         result = TimKiemTuyenTinh(projects, COLUMN_PROJECT.GIA_TIEN, giaTien.ToString());
-                        break;
-                    case "g":
-                        DateTime tuNgay_1 = VALIDATION.KiemTraDuLieuThoiGian("Từ ngày: ");
-                        DateTime denNgay_1 = VALIDATION.KiemTraDuLieuThoiGian("Đến ngày: ");
+                    }
+                    break;
+                case "g":
+                    DateTime tuNgay_1 = VALIDATION.KiemTraDuLieuThoiGian("Từ ngày: ");
+                    DateTime denNgay_1 = VALIDATION.KiemTraDuLieuThoiGian("Đến ngày: ");
+                    if (thuatToanTimKiem == "b")
+                    {
+
+                    }
+                    else
+                    {
                         result = TimKiemTuyenTinh(projects, COLUMN_PROJECT.NGAY_BAT_DAU, null, tuNgay_1.ToString(), denNgay_1.ToString());
-                        break;
-                    case "h":
-                        DateTime tuNgay_2 = VALIDATION.KiemTraDuLieuThoiGian("Từ ngày: ");
-                        DateTime denNgay_2 = VALIDATION.KiemTraDuLieuThoiGian("Đến ngày: ");
+                    }
+                    break;
+                case "h":
+                    DateTime tuNgay_2 = VALIDATION.KiemTraDuLieuThoiGian("Từ ngày: ");
+                    DateTime denNgay_2 = VALIDATION.KiemTraDuLieuThoiGian("Đến ngày: ");
+                    if (thuatToanTimKiem == "b")
+                    {
+
+                    }
+                    else
+                    {
                         result = TimKiemTuyenTinh(projects, COLUMN_PROJECT.NGAY_KET_THUC, null, tuNgay_2.ToString(), denNgay_2.ToString());
-                        break;
-                    default:
-                        Console.WriteLine("Không có lựa chọn này");
-                        break;
-                }
+                    }
+                    break;
+                default:
+                    Console.WriteLine("Không có lựa chọn này");
+                    break;
+            }
 
-                if (result.Count > 0)
-                {
-                    Console.WriteLine("DANH SÁCH DỰ ÁN ĐƯỢC TÌM THẤY");
-                    HienThiDuLieuDuAn(result);
-                }
-                else
-                {
-                    Console.WriteLine("Không tìm thấy được dự án nào phù hợp thông tin yêu cầu");
-                }
-                Console.Write("Bạn có muốn tìm kiếm thêm thông tin của dự án không (Y/N)?: ");
-                tiepTuc = Console.ReadLine();
-
-            } while (tiepTuc.ToUpper() == "Y" ? true : false);
+            if (result.Count > 0)
+            {
+                Console.WriteLine("DANH SÁCH DỰ ÁN ĐƯỢC TÌM THẤY");
+                HienThiDuLieuDuAn(result);
+            }
+            else
+            {
+                Console.WriteLine("Không tìm thấy được dự án nào phù hợp thông tin yêu cầu");
+            }
 
         }
         public static void SapXepThongTinDuAn(ref List<PROJECT> projects)
         {
-            string tiepTuc;
             string luaChonSapXep;
             string tangHayGiam;
             string thuatToanSapXep;
-            do
+            Console.WriteLine("Bạn muốn sắp xếp theo: ");
+            Console.WriteLine("a. Mã dự án");
+            Console.WriteLine("b. Tên dự án");
+            Console.WriteLine("c. Trạng thái");
+            Console.WriteLine("d. Ngày bắt đầu");
+            Console.WriteLine("e. Ngày kết thúc");
+            Console.WriteLine("f. Người quản lý");
+            Console.WriteLine("g. Giá tiền");
+            luaChonSapXep = VALIDATION.KiemTraDoDaiNhapLieu("Nhập lựa chọn sắp xếp theo: ", true);
+            tangHayGiam = VALIDATION.KiemTraDoDaiNhapLieu("Chọn sắp xếp TĂNG hay GIẢM (T: Tăng | G: Giảm | Khác: Tăng): ", true, 1);
+            thuatToanSapXep = VALIDATION.KiemTraDoDaiNhapLieu("Chọn thuật toán sắp xếp bạn muốn dùng (a: Sắp xếp chèn | b: Sắp xếp lựa chọn | c: Sắp xếp nổi bọt | d: Sắp xếp nhanh | Khác: Sắp xếp chèn ): ", true);
+            switch (luaChonSapXep)
             {
-                Console.WriteLine("Bạn muốn sắp xếp theo: ");
-                Console.WriteLine("a. Mã dự án");
-                Console.WriteLine("b. Tên dự án");
-                Console.WriteLine("c. Trạng thái");
-                Console.WriteLine("d. Ngày bắt đầu");
-                Console.WriteLine("e. Ngày kết thúc");
-                Console.WriteLine("f. Người quản lý");
-                Console.WriteLine("g. Giá tiền");
-                luaChonSapXep = VALIDATION.KiemTraDoDaiNhapLieu("Nhập lựa chọn sắp xếp theo: ",true);
-                tangHayGiam = VALIDATION.KiemTraDoDaiNhapLieu("Chọn sắp xếp TĂNG hay GIẢM (T: Tăng | G: Giảm | Khác: Tăng): ",true, 1);
+                case "a":
+                    switch (thuatToanSapXep)
+                    {
+                        case "a":
+                            SapXepChen(ref projects, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        default:
+                            SapXepChen(ref projects, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                    }
+                    break;
+                case "b":
+                    break;
+                case "c":
+                    break;
+                case "d":
+                    break;
+                case "e":
+                    break;
+                case "f":
+                    break;
+                case "g":
+                    break;
+                default:
+                    Console.WriteLine("Không có lựa chọn này");
+                    break;
+            }
 
-                thuatToanSapXep = VALIDATION.KiemTraDoDaiNhapLieu("Chọn thuật toán sắp xếp bạn muốn dùng (a: Sắp xếp chèn | b: Sắp xếp lựa chọn | c: Sắp xếp nổi bọt | d: Sắp xếp trộn | e: Sắp xếp nhanh | Khác: Sắp xếp chèn ): ",true);
-                switch (luaChonSapXep)
-                {
-                    case "a":
-                        switch (thuatToanSapXep)
-                        {
-                            case "a":
-                                SapXepChen(ref projects, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
-                                Console.WriteLine("Sau khi sắp xếp");
-                                HienThiDuLieuDuAn(projects);
-                                break;
-                            default:
-                                SapXepChen(ref projects, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
-                                Console.WriteLine("Sau khi sắp xếp");
-                                HienThiDuLieuDuAn(projects);
-                                break;
-                        }
-                        break;
-                    case "b":
-                        break;
-                    case "c":
-                        break;
-                    case "d":
-                        break;
-                    case "e":
-                        break;
-                    case "f":
-                        break;
-                    case "g":
-                        break;
-                    default:
-                        Console.WriteLine("Không có lựa chọn này");
-                        break;
-                }
-
-                
-                Console.Write("Bạn có muốn tiếp tục thao tác sắp xếp không (Y/N)?: ");
-                tiepTuc = Console.ReadLine();
-
-            } while (tiepTuc.ToUpper() == "Y" ? true : false);
         }
         public static List<PROJECT> TimKiemTuyenTinh(List<PROJECT> projects, string column, string timKiem, string tuNgay = null, string denNgay = null)
         {
@@ -352,9 +386,47 @@ namespace DoAnCuoiKi.Function
 
             return result;
         }
-        public static List<PROJECT> TimKiemNhiPhan(List<PROJECT> projects)
+        public static List<PROJECT> TimKiemNhiPhan(List<PROJECT> projects, string column, string timKiem, string tuNgay = null, string denNgay = null)
         {
-            return null;
+            SapXepChen(ref projects, column, "T");
+            List<PROJECT> result = new List<PROJECT>();
+            bool ktr = false;
+            int left = 0;
+            int right = projects.Count - 1;
+            int mid;
+            while (left <= right)
+            {
+                mid = (left + right) / 2;
+                if ((column == COLUMN_PROJECT.MA_DU_AN && projects[mid].ma_du_an == int.Parse(timKiem))
+                || (column == COLUMN_PROJECT.TEN_DU_AN && projects[mid].ten_du_an == timKiem.Trim())
+                || (column == COLUMN_PROJECT.TRANG_THAI && projects[mid].trang_thai == timKiem.Trim())
+                || (column == COLUMN_PROJECT.NGUOI_QUAN_LY && projects[mid].nguoi_quan_ly == timKiem.Trim())
+                || (column == COLUMN_PROJECT.GIA_TIEN && projects[mid].gia_tien == double.Parse(timKiem))
+                //|| (column == COLUMN_PROJECT.NGAY_BAT_DAU && (projects[mid].ngay_bat_dau > DateTime.Parse(tuNgay) || projects[mid].ngay_bat_dau < DateTime.Parse(denNgay)))
+                //|| (column == COLUMN_PROJECT.NGAY_BAT_DAU && (projects[mid].ngay_ket_thuc > DateTime.Parse(tuNgay) || projects[mid].ngay_ket_thuc < DateTime.Parse(denNgay)))
+                )
+                {
+                    result.Add(projects[mid]);
+                    break;
+
+                }
+                else if ((column == COLUMN_PROJECT.MA_DU_AN && projects[mid].ma_du_an < int.Parse(timKiem))
+                || (column == COLUMN_PROJECT.TEN_DU_AN && SoSanhChuoiKyTu(projects[mid].ten_du_an, timKiem))
+                || (column == COLUMN_PROJECT.TRANG_THAI && SoSanhChuoiKyTu(projects[mid].trang_thai, timKiem))
+                || (column == COLUMN_PROJECT.NGUOI_QUAN_LY && SoSanhChuoiKyTu(projects[mid].nguoi_quan_ly, timKiem))
+                || (column == COLUMN_PROJECT.GIA_TIEN && projects[mid].gia_tien < double.Parse(timKiem))
+                )
+                {
+                    left = mid + 1;
+                }
+                else
+                {
+                    right = mid - 1;
+                }
+
+            }
+
+            return result;
         }
         public static void SapXepChen(ref List<PROJECT> projects, string column, string tangHayGiam)
         {
@@ -375,22 +447,77 @@ namespace DoAnCuoiKi.Function
                 }
             }
         }
-        public static void SapXepLuaChon(ref List<PROJECT> projects)
-        {
+        //public static void SapXepLuaChon(ref List<PROJECT> projects)
+        //{
+        //    int min;
+        //    for (int i = 0; i < sachs.Count - 1; i++)
+        //    {
+        //        min = i;
+        //        for (int j = i + 1; j < sachs.Count; j++)
+        //        {
+        //            if (!SoSanhChuoiKyTu(sachs[i].MaSach, sachs[j].MaSach))
+        //            {
+        //                min = j;
+        //            }
+        //        }
 
-        }
-        public static void SapXepNoiBot(ref List<PROJECT> projects)
-        {
+        //        Sach temp = sachs[i];
+        //        sachs[i] = sachs[min];
+        //        sachs[min] = temp;
+        //    }
+        //}
+        //public static void SapXepNoiBot(ref List<PROJECT> projects)
+        //{
+        //    for (int i = 0; i < sachs.Count; i++)
+        //    {
+        //        for (int j = 0; i < sachs.Count - i - 1; i++)
+        //        {
+        //            if (!SoSanhChuoiKyTu(sachs[j].TuaSach, sachs[j + 1].TuaSach))
+        //            {
+        //                Sach temp = sachs[i];
+        //                sachs[i] = sachs[j + 1];
+        //                sachs[j + 1] = temp;
+        //            }
+        //        }
+        //    }
 
-        }
-        public static void SapXepTron(ref List<PROJECT> projects)
-        {
+        //}
+        //public static void SapXepNhanh(ref List<PROJECT> projects)
+        //{
 
-        }
-        public static void SapXepNhanh(ref List<PROJECT> projects)
-        {
+        //}
+        //static void QuickSort(ref List<Sach> sachs, int low, int high)
+        //{
+        //    if (low < high)
+        //    {
+        //        int pi = Partition(ref sachs, low, high);
 
-        }
+        //        QuickSort(ref sachs, low, pi - 1);
+        //        QuickSort(ref sachs, pi + 1, high);
+        //    }
+        //}
+        //static int Partition(ref List<Sach> sachs, int low, int high)
+        //{
+        //    int pivot = sachs[high].Gia;
+
+        //    int i = (low - 1);
+        //    for (int j = low; j < high; j++)
+        //    {
+        //        if (sachs[j].Gia > pivot)
+        //        {
+        //            i++;
+
+        //            Sach temp = sachs[i];
+        //            sachs[i] = sachs[j];
+        //            sachs[j] = temp;
+        //        }
+        //    }
+        //    Sach temp1 = sachs[i + 1];
+        //    sachs[i + 1] = sachs[high];
+        //    sachs[high] = temp1;
+
+        //    return i + 1;
+        //}
         static bool SoSanhChuoiKyTu(string a, string b)
         {
             int count = 0;

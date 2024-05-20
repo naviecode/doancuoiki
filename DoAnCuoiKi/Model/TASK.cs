@@ -8,6 +8,7 @@ namespace DoAnCuoiKi.Model
 {
     class TASK
     {
+        public int ma_du_an;
         public int ma_cong_viec;
         public string du_an_dang_thuc_hien;
         public string noi_dung_nhiem_vu;

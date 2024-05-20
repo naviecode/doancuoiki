@@ -36,10 +36,9 @@ namespace DoAnCuoiKi.QuanLyManHinh
         static void MenuPhu()
         {
             Console.WriteLine("**\t   a. Đọc file dự án                             **");
-            Console.WriteLine("**\t   b. Đọc file công việc                         **");
-            Console.WriteLine("**\t   c. Ghi file dự án                             **");
+            Console.WriteLine("**\t   b. Ghi file dự án                             **");
+            Console.WriteLine("**\t   c. Đọc file công việc                         **");
             Console.WriteLine("**\t   d. Ghi file công việc                         **");
-            Console.WriteLine("**\t   e. Danh sách các file đang có                 **");
         }
 
         public void ChuongTrinhQuanLyDuAn()
@@ -189,14 +188,13 @@ namespace DoAnCuoiKi.QuanLyManHinh
                             HandleFile.DocFileTxtDuAn(lstProject);
                             break;
                         case 'b':
+                            HandleFile.GhiFileTxtDuAn(lstProject);
                             break;
                         case 'c':
                             HandleFile.DocFileTxtCongViec(lstProject, lstTask);
                             break;
                         case 'd':
-                            break;
-                        case 'e':
-                            HandleFile.DanhSachFile();
+                            HandleFile.GhiFileTxtCongViec(lstTask);
                             break;
                         default:
                             Console.WriteLine("Bạn đang trong màn hình xử lý file, vui lòng trở về nếu muốn thực hiện thao tác khác!");

@@ -17,22 +17,22 @@ namespace DoAnCuoiKi.Function
             string tiepTuc;
             int maDuAn;
             int stt = 1;
+            Console.WriteLine("*-----------------------------------------------------------------------------------*");
+            Console.WriteLine("|                                 CÁC DỰ ÁN HIỆN CÓ                                 |");
+            Console.WriteLine("*-----------------------------------------------------------------------------------*");
+            Console.WriteLine("| {0,-6} | {1,-12} | {2,-26} | {3,-12} | {4,-12} |", "STT", "Mã dự án", "Tên dự án", "Ngày bắt đầu", "Ngày kết thúc");
+            Console.WriteLine("*-----------------------------------------------------------------------------------*");
+
+            foreach (PROJECT prj in projects)
+            {
+                Console.WriteLine("| {0,-6} | {1,-12} | {2,-26} | {3,-12} | {4,-12} |", stt, prj.ma_du_an, prj.ten_du_an, prj.ngay_bat_dau.ToShortDateString(), prj.ngay_ket_thuc.ToShortDateString());
+                Console.WriteLine("*-----------------------------------------------------------------------------------*");
+                stt++;
+            }
+            maDuAn = VALIDATION.KiemTraDuLieuSo("Nhập mã dự án cần thêm công việc: ");
+
             do
             {
-                Console.WriteLine("*-----------------------------------------------------------------------------------*");
-                Console.WriteLine("|                                 CÁC DỰ ÁN HIỆN CÓ                                 |");
-                Console.WriteLine("*-----------------------------------------------------------------------------------*");
-                Console.WriteLine("| {0,-6} | {1,-12} | {2,-26} | {3,-12} | {4,-12} |", "STT", "Mã dự án", "Tên dự án", "Ngày bắt đầu", "Ngày kết thúc");
-                Console.WriteLine("*-----------------------------------------------------------------------------------*");
-
-                foreach (PROJECT prj in projects)
-                {
-                    Console.WriteLine("| {0,-6} | {1,-12} | {2,-26} | {3,-12} | {4,-12} |", stt, prj.ma_du_an, prj.ten_du_an, prj.ngay_bat_dau.ToShortDateString(), prj.ngay_ket_thuc.ToShortDateString());
-                    Console.WriteLine("*-----------------------------------------------------------------------------------*");
-                    stt++;
-                }
-                maDuAn = VALIDATION.KiemTraDuLieuSo("Nhập mã dự án cần thêm công việc: ");
-
                 foreach (var item in projects)
                 {
                     if (item.ma_du_an == maDuAn)
@@ -49,9 +49,6 @@ namespace DoAnCuoiKi.Function
                         item.tasks.Add(taskNew);
                     }
                 }
-
-
-
                 Console.Write("Bạn có muốn nhập thêm công việc cho dự án không (Y/N)?: ");
                 tiepTuc = Console.ReadLine();
             } while (tiepTuc.ToUpper() == "Y" ? true : false);
@@ -67,8 +64,6 @@ namespace DoAnCuoiKi.Function
             Console.WriteLine("*-------------------------------------------------------------------------------------------------------------------------------------*");
             foreach (TASK task in tasks)
             {
-                //Kiểm tra trạng thái trước khi hiển thị
-                //+ Ngày hiện tại > ngày hoàn thành trễ
                 if (task.ngay_bat_dau_lam > task.thoi_han_hoan_thanh) status = STATUS.DELAY;
                 else status = task.trang_thai_cong_viec; 
                 Console.WriteLine("| {0,-6} | {1,-26} | {2,-26} | {3,-12} | {4,-12} | {5,-12} |", stt, task.du_an_dang_thuc_hien, task.noi_dung_nhiem_vu, task.nguoi_lam, task.ngay_bat_dau_lam.ToShortDateString(), task.thoi_han_hoan_thanh.ToShortDateString(), task.trang_thai_cong_viec);
@@ -80,30 +75,21 @@ namespace DoAnCuoiKi.Function
         public static void CapNhapCongViec(List<TASK> tasks)
         {
 
-            string tiepTuc;
-            do
+            HienThiCongViecTrongDuAn(tasks);
+            int maCongViec = VALIDATION.KiemTraDuLieuSo("Nhập mã công việc cần điều chỉnh: ");
+            TASK taskSearch = tasks.Find(x => x.ma_cong_viec == maCongViec);
+            if (tasks.Contains(taskSearch))
             {
-                HienThiCongViecTrongDuAn(tasks);
+                Console.WriteLine("Nhập thông tin điều chỉnh công việc");
+                taskSearch.noi_dung_nhiem_vu = VALIDATION.KiemTraDoDaiNhapLieu("Nhập nội dung nhiệm vụ: ", true);
+                taskSearch.nguoi_lam = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên người làm: ");
 
-                int maCongViec = VALIDATION.KiemTraDuLieuSo("Nhập mã công việc cần điều chỉnh: ");
-                TASK taskSearch = tasks.Find(x => x.ma_cong_viec == maCongViec);
-                if (tasks.Contains(taskSearch))
-                {
-                    Console.WriteLine("Nhập thông tin điều chỉnh công việc");
-                    taskSearch.noi_dung_nhiem_vu = VALIDATION.KiemTraDoDaiNhapLieu("Nhập nội dung nhiệm vụ: ", true);
-                    taskSearch.nguoi_lam = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên người làm: ");
-
-                    Console.WriteLine("Cập nhập thành công!");
-                }
-                else
-                {
-                    Console.WriteLine("Không tìm thấy mã công việc này!");
-                }
-
-                Console.Write("Bạn có muốn cập nhập thêm thông tin công việc không (Y/N)?: ");
-                tiepTuc = Console.ReadLine();
-
-            } while (tiepTuc.ToUpper() == "Y" ? true : false);
+                Console.WriteLine("Cập nhập thành công!");
+            }
+            else
+            {
+                Console.WriteLine("Không tìm thấy mã công việc này!");
+            }
 
 
 
@@ -120,7 +106,12 @@ namespace DoAnCuoiKi.Function
                 Console.WriteLine("P: đang tiến hành");
                 Console.WriteLine("D: bị trễ");
                 Console.WriteLine("A: Hoàn thành");
-                string trangThai = VALIDATION.KiemTraDoDaiNhapLieu("Nhập trạng thái điểu chỉnh theo ký tự (N-P-D-A) tương ứng", true);
+                string trangThai = VALIDATION.KiemTraDoDaiNhapLieu("Nhập trạng thái điểu chỉnh theo ký tự (N-P-D-A) tương ứng:", true);
+                if(DateTime.Now > taskSearch.thoi_han_hoan_thanh)
+                {
+                    Console.WriteLine("Dự án đã bị trễ không thể cập nhập được nữa !");
+                    return;
+                }    
                 if (trangThai.ToUpper() == "N")
                 {
                     taskSearch.trang_thai_cong_viec = STATUS.NOT_START;
@@ -179,155 +170,140 @@ namespace DoAnCuoiKi.Function
         }
         public static void TimKiemThongTinCongViec(List<TASK> tasks)
         {
-            string tiepTuc;
             string luaChonTimKiem;
             string thuatToanTimKiem;
             List<TASK> result = new List<TASK>();
-            do
+            Console.WriteLine("Bạn muốn tìm kiếm theo: ");
+            Console.WriteLine("a. Mã dự án");
+            Console.WriteLine("b. Tên dự án đang làm");
+            Console.WriteLine("c. Trạng thái");
+            Console.WriteLine("d. Người làm công việc");
+            Console.WriteLine("e. Ngày bắt đầu");
+            Console.WriteLine("f. Ngày kết thúc");
+            luaChonTimKiem = VALIDATION.KiemTraDoDaiNhapLieu("Nhập lựa chọn: ", true);
+            thuatToanTimKiem = VALIDATION.KiemTraDoDaiNhapLieu("Nhập chọn thuật toán tìm kiếm bạn muốn dùng (a: Tuần tự | b: Nhị phân): ", true);
+            switch (luaChonTimKiem.ToUpper())
             {
-                Console.WriteLine("Bạn muốn tìm kiếm theo: ");
-                Console.WriteLine("a. Mã dự án");
-                Console.WriteLine("b. Tên dự án đang làm");
-                Console.WriteLine("c. Trạng thái");
-                Console.WriteLine("d. Người làm công việc");
-                Console.WriteLine("e. Ngày bắt đầu");
-                Console.WriteLine("f. Ngày kết thúc");
-                luaChonTimKiem = VALIDATION.KiemTraDoDaiNhapLieu("Nhập lựa chọn: ", true);
-                thuatToanTimKiem = VALIDATION.KiemTraDoDaiNhapLieu("Nhập chọn thuật toán tìm kiếm bạn muốn dùng (a: Tuần tự | b: Nhị phân): ", true);
-                switch (luaChonTimKiem.ToUpper())
-                {
-                    case "a":
-                        int maDuAnSearch = VALIDATION.KiemTraDuLieuSo("Nhập mã công việc cần tìm: ");
-                        if(thuatToanTimKiem.ToLower() == "a")
-                        {
-                            result = TimKiemTuyenTinh(tasks, COLUMN_TASK.MA_CONG_VIEC, maDuAnSearch.ToString());
-                        }
-                        else
-                        {
+                case "a":
+                    int maDuAnSearch = VALIDATION.KiemTraDuLieuSo("Nhập mã công việc cần tìm: ");
+                    if (thuatToanTimKiem.ToLower() == "a")
+                    {
+                        result = TimKiemTuyenTinh(tasks, COLUMN_TASK.MA_CONG_VIEC, maDuAnSearch.ToString());
+                    }
+                    else
+                    {
 
-                        }
-                        break;
-                    case "b":
-                        string tenDuAnSearch = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên công việc cần tìm: ", true);
-                        if(thuatToanTimKiem.ToLower() == "a")
-                        {
-                            result = TimKiemTuyenTinh(tasks, COLUMN_TASK.TEN_DU_AN, tenDuAnSearch);
-                        }    
-                        break;
-                    case "c":
-                        Console.WriteLine("Chọn trạng thái (N: Chưa bắt đầu | I: Đang tiến hành | D: Bị trễ | A: Hoàn thành");
-                        string trangThaiSearch = VALIDATION.KiemTraDoDaiNhapLieu("Nhập trạng thái cần tìm: ", true);
-                        if (trangThaiSearch.ToUpper() == "N") trangThaiSearch = STATUS.NOT_START;
-                        else if (trangThaiSearch.ToUpper() == "I") trangThaiSearch = STATUS.IN_PROGRESS;
-                        else if (trangThaiSearch.ToUpper() == "D") trangThaiSearch = STATUS.DELAY;
-                        else if (trangThaiSearch.ToUpper() == "A") trangThaiSearch = STATUS.DONE;
-                        if(thuatToanTimKiem.ToLower() == "a")
-                        {
-                            result = TimKiemTuyenTinh(tasks, COLUMN_TASK.TRANG_THAI, trangThaiSearch);
-                        }    
-                        break;
-                    case "d":
-                        string tenNguoiQuanLy = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên người người làm cần tìm: ", true);
-                        if(thuatToanTimKiem.ToLower() == "a")
-                        {
-                            result = TimKiemTuyenTinh(tasks, COLUMN_TASK.NGUOI_LAM, tenNguoiQuanLy);
+                    }
+                    break;
+                case "b":
+                    string tenDuAnSearch = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên công việc cần tìm: ", true);
+                    if (thuatToanTimKiem.ToLower() == "a")
+                    {
+                        result = TimKiemTuyenTinh(tasks, COLUMN_TASK.TEN_DU_AN, tenDuAnSearch);
+                    }
+                    break;
+                case "c":
+                    Console.WriteLine("Chọn trạng thái (N: Chưa bắt đầu | I: Đang tiến hành | D: Bị trễ | A: Hoàn thành");
+                    string trangThaiSearch = VALIDATION.KiemTraDoDaiNhapLieu("Nhập trạng thái cần tìm: ", true);
+                    if (trangThaiSearch.ToUpper() == "N") trangThaiSearch = STATUS.NOT_START;
+                    else if (trangThaiSearch.ToUpper() == "I") trangThaiSearch = STATUS.IN_PROGRESS;
+                    else if (trangThaiSearch.ToUpper() == "D") trangThaiSearch = STATUS.DELAY;
+                    else if (trangThaiSearch.ToUpper() == "A") trangThaiSearch = STATUS.DONE;
+                    if (thuatToanTimKiem.ToLower() == "a")
+                    {
+                        result = TimKiemTuyenTinh(tasks, COLUMN_TASK.TRANG_THAI, trangThaiSearch);
+                    }
+                    break;
+                case "d":
+                    string tenNguoiQuanLy = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên người người làm cần tìm: ", true);
+                    if (thuatToanTimKiem.ToLower() == "a")
+                    {
+                        result = TimKiemTuyenTinh(tasks, COLUMN_TASK.NGUOI_LAM, tenNguoiQuanLy);
 
-                        }    
-                        break;
-                    case "e":
-                        DateTime tuNgay_1 = VALIDATION.KiemTraDuLieuThoiGian("Từ ngày: ");
-                        DateTime denNgay_1 = VALIDATION.KiemTraDuLieuThoiGian("Đến ngày: ");
-                        if(thuatToanTimKiem.ToLower() == "a")
-                        {
-                            result = TimKiemTuyenTinh(tasks, COLUMN_TASK.NGAY_BAT_DAU, null, tuNgay_1.ToString(), denNgay_1.ToString());
+                    }
+                    break;
+                case "e":
+                    DateTime tuNgay_1 = VALIDATION.KiemTraDuLieuThoiGian("Từ ngày: ");
+                    DateTime denNgay_1 = VALIDATION.KiemTraDuLieuThoiGian("Đến ngày: ");
+                    if (thuatToanTimKiem.ToLower() == "a")
+                    {
+                        result = TimKiemTuyenTinh(tasks, COLUMN_TASK.NGAY_BAT_DAU, null, tuNgay_1.ToString(), denNgay_1.ToString());
 
-                        }    
-                        break;
-                    case "f":
-                        DateTime tuNgay_2 = VALIDATION.KiemTraDuLieuThoiGian("Từ ngày: ");
-                        DateTime denNgay_2 = VALIDATION.KiemTraDuLieuThoiGian("Đến ngày: ");
-                        if(thuatToanTimKiem.ToLower() == "a")
-                        {
-                            result = TimKiemTuyenTinh(tasks, COLUMN_TASK.NGAY_KET_THUC, null, tuNgay_2.ToString(), denNgay_2.ToString());
+                    }
+                    break;
+                case "f":
+                    DateTime tuNgay_2 = VALIDATION.KiemTraDuLieuThoiGian("Từ ngày: ");
+                    DateTime denNgay_2 = VALIDATION.KiemTraDuLieuThoiGian("Đến ngày: ");
+                    if (thuatToanTimKiem.ToLower() == "a")
+                    {
+                        result = TimKiemTuyenTinh(tasks, COLUMN_TASK.NGAY_KET_THUC, null, tuNgay_2.ToString(), denNgay_2.ToString());
 
-                        }    
-                        break;
-                    default:
-                        Console.WriteLine("Không có lựa chọn này");
-                        break;
-                }
+                    }
+                    break;
+                default:
+                    Console.WriteLine("Không có lựa chọn này");
+                    break;
+            }
 
-                if (result.Count > 0)
-                {
-                    Console.WriteLine("DANH SÁCH DỰ ÁN ĐƯỢC TÌM THẤY");
-                    HienThiCongViecTrongDuAn(result);
-                }
-                else
-                {
-                    Console.WriteLine("Không tìm thấy được dự án nào phù hợp thông tin yêu cầu");
-                }
-                Console.Write("Bạn có muốn tìm kiếm thêm thông tin của dự án không (Y/N)?: ");
-                tiepTuc = Console.ReadLine();
-
-            } while (tiepTuc.ToUpper() == "Y" ? true : false);
+            if (result.Count > 0)
+            {
+                Console.WriteLine("DANH SÁCH DỰ ÁN ĐƯỢC TÌM THẤY");
+                HienThiCongViecTrongDuAn(result);
+            }
+            else
+            {
+                Console.WriteLine("Không tìm thấy được dự án nào phù hợp thông tin yêu cầu");
+            }
 
         }
         public static void SapXepThongTinDuAn(ref List<TASK> tasks)
         {
-            string tiepTuc;
             string luaChonSapXep;
             string tangHayGiam;
             string thuatToanSapXep;
-            do
+            Console.WriteLine("Bạn muốn sắp xếp theo: ");
+            Console.WriteLine("a. Mã dự án");
+            Console.WriteLine("b. Tên dự án đang làm");
+            Console.WriteLine("c. Trạng thái");
+            Console.WriteLine("d. Ngày bắt đầu");
+            Console.WriteLine("e. Ngày kết thúc");
+            Console.WriteLine("f. Người làm");
+            luaChonSapXep = VALIDATION.KiemTraDoDaiNhapLieu("Nhập lựa chọn sắp xếp theo: ", true);
+            tangHayGiam = VALIDATION.KiemTraDoDaiNhapLieu("Chọn sắp xếp TĂNG hay GIẢM (T: Tăng | G: Giảm | Khác: Tăng): ", true, 1);
+
+            thuatToanSapXep = VALIDATION.KiemTraDoDaiNhapLieu("Chọn thuật toán sắp xếp bạn muốn dùng (a: Sắp xếp chèn | b: Sắp xếp lựa chọn | c: Sắp xếp nổi bọt | d: Sắp xếp nhanh | Khác: Sắp xếp chèn ): ", true);
+            switch (luaChonSapXep)
             {
-                Console.WriteLine("Bạn muốn sắp xếp theo: ");
-                Console.WriteLine("a. Mã dự án");
-                Console.WriteLine("b. Tên dự án đang làm");
-                Console.WriteLine("c. Trạng thái");
-                Console.WriteLine("d. Ngày bắt đầu");
-                Console.WriteLine("e. Ngày kết thúc");
-                Console.WriteLine("f. Người làm");
-                luaChonSapXep = VALIDATION.KiemTraDoDaiNhapLieu("Nhập lựa chọn sắp xếp theo: ", true);
-                tangHayGiam = VALIDATION.KiemTraDoDaiNhapLieu("Chọn sắp xếp TĂNG hay GIẢM (T: Tăng | G: Giảm | Khác: Tăng): ", true, 1);
+                case "a":
+                    switch (thuatToanSapXep)
+                    {
+                        case "a":
+                            SapXepChen(ref tasks, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp");
+                            HienThiCongViecTrongDuAn(tasks);
+                            break;
+                        default:
+                            SapXepChen(ref tasks, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp");
+                            HienThiCongViecTrongDuAn(tasks);
+                            break;
+                    }
+                    break;
+                case "b":
+                    break;
+                case "c":
+                    break;
+                case "d":
+                    break;
+                case "e":
+                    break;
+                case "f":
+                    break;
+                default:
+                    Console.WriteLine("Không có lựa chọn này");
+                    break;
+            }
 
-                thuatToanSapXep = VALIDATION.KiemTraDoDaiNhapLieu("Chọn thuật toán sắp xếp bạn muốn dùng (a: Sắp xếp chèn | b: Sắp xếp lựa chọn | c: Sắp xếp nổi bọt | d: Sắp xếp trộn | e: Sắp xếp nhanh | Khác: Sắp xếp chèn ): ", true);
-                switch (luaChonSapXep)
-                {
-                    case "a":
-                        switch (thuatToanSapXep)
-                        {
-                            case "a":
-                                SapXepChen(ref tasks, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
-                                Console.WriteLine("Sau khi sắp xếp");
-                                HienThiCongViecTrongDuAn(tasks);
-                                break;
-                            default:
-                                SapXepChen(ref tasks, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
-                                Console.WriteLine("Sau khi sắp xếp");
-                                HienThiCongViecTrongDuAn(tasks);
-                                break;
-                        }
-                        break;
-                    case "b":
-                        break;
-                    case "c":
-                        break;
-                    case "d":
-                        break;
-                    case "e":
-                        break;
-                    case "f":
-                        break;
-                    default:
-                        Console.WriteLine("Không có lựa chọn này");
-                        break;
-                }
-
-
-                Console.Write("Bạn có muốn tiếp tục thao tác sắp xếp không (Y/N)?: ");
-                tiepTuc = Console.ReadLine();
-
-            } while (tiepTuc.ToUpper() == "Y" ? true : false);
         }
         public static List<TASK> TimKiemTuyenTinh(List<TASK> tasks, string column, string timKiem, string tuNgay = null, string denNgay = null)
         {

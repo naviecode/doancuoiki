@@ -5,4 +5,9 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\write_file_project\" />
+    <Folder Include="Data\write_file_task\" />
+  </ItemGroup>
+
 </Project>

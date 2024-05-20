@@ -8,11 +8,12 @@ namespace DoAnCuoiKi.Const
 {
     internal class COLUMN_TASK
     {
-        public const string MA_CONG_VIEC = "MA_DU_AN";
-        public const string TEN_DU_AN = "TEN_DU_AN";
-        public const string NGUOI_LAM = "NGUOI_QUAN_LY";
+        public const string MA_CONG_VIEC = "MÃ CÔNG VIỆC";
+        public const string TEN_DU_AN = "TÊN DỰ ÁN THAM GIA";
+        public const string NOI_DUNG = "NỘI DUNG NHIỆM VỤ";
+        public const string NGUOI_LAM = "NGƯỜI LÀM";
         public const string TRANG_THAI = "TRANG_THAI";
-        public const string NGAY_BAT_DAU = "NGAY_BAT_DAU";
-        public const string NGAY_KET_THUC = "NGAY_KET_THUC";
+        public const string NGAY_BAT_DAU = "NGÀY BẮT ĐẦU";
+        public const string NGAY_KET_THUC = "NGÀY HOÀN THÀNH";
     }
 }
