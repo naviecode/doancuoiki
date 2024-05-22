@@ -25,7 +25,7 @@ namespace DoAnCuoiKi.Function
                 prN.gia_tien = VALIDATION.KiemTraDuLieuSo("Nhập giá tiền: ");
                 prN.trang_thai = STATUS.NOT_START;
                 prN.ngay_bat_dau = VALIDATION.KiemTraDuLieuThoiGian("Nhập ngày bắt đầu (dd/MM/yyyy): ");
-                prN.ngay_ket_thuc = VALIDATION.SoSanhNgay(prN.ngay_bat_dau,"Nhập ngày kết thúc (dd/MM/yyyy): ", "ngày kết thúc", "ngày bắt đầu", "bé");
+                prN.ngay_ket_thuc = VALIDATION.SoSanhNgay(prN.ngay_bat_dau,"Nhập ngày kết thúc (dd/MM/yyyy): ", "Ngày kết thúc", "ngày bắt đầu", "nhỏ");
                 prN.tasks = new List<TASK>();
 
                 //ràn buộc ngày bắt đầu phải < ngày kết thúc => Hàm bổ sung
@@ -38,12 +38,12 @@ namespace DoAnCuoiKi.Function
                     {
                         TASK tN = new TASK();
                         tN.ma_du_an = prN.ma_du_an; 
-                        tN.ma_cong_viec = VALIDATION.KiemTraDuLieuSo("Nhập mã công việc");
+                        tN.ma_cong_viec = VALIDATION.KiemTraDuLieuSo("Nhập mã công việc: ");
                         tN.du_an_dang_thuc_hien = prN.ten_du_an;
                         tN.noi_dung_nhiem_vu = VALIDATION.KiemTraDoDaiNhapLieu("Nhập nội dung công việc: ");
                         tN.nguoi_lam = VALIDATION.KiemTraDoDaiNhapLieu("Nhập tên người làm công việc này: ");
-                        tN.ngay_bat_dau_lam = VALIDATION.KiemTraDuLieuThoiGian("Nhập ngày bắt đầu thực hiện");
-                        tN.thoi_han_hoan_thanh = VALIDATION.SoSanhNgay(tN.ngay_bat_dau_lam, "ngày bắt đầu thực hiện", "ngày hoàn thành", "lớn");
+                        tN.ngay_bat_dau_lam = VALIDATION.KiemTraDuLieuThoiGian("Nhập ngày bắt đầu thực hiện (dd/MM/yyyy): ");
+                        tN.thoi_han_hoan_thanh = VALIDATION.SoSanhNgay(tN.ngay_bat_dau_lam, "Nhập ngày hoàn thành công việc (dd/MM/yyyy): ", "Ngày hoàn thành", "ngày bắt đầu", "nhỏ");
                         tN.trang_thai_cong_viec = STATUS.NOT_START;
                         prN.tasks.Add(tN);
                         tasks.Add(tN);
@@ -174,8 +174,9 @@ namespace DoAnCuoiKi.Function
             PROJECT projectSearch = projects.Find(x => x.ma_du_an == maDuAn);
             if (projects.Contains(projectSearch))
             {
-                ConsoleKeyInfo confirm = VALIDATION.NhapOption("Bạn có chắc muốn xóa dự án này không (Y: Có | N - Ký tự khác: không) ?");
-                if(confirm.KeyChar != 'Y')
+                ConsoleKeyInfo confirm = VALIDATION.NhapOption("Bạn có chắc muốn xóa dự án này không (Y: Có | N - Ký tự khác: không) ?: ");
+                string confirmStr = Convert.ToString(confirm.KeyChar);
+                if (confirmStr.ToLower() == "y")
                 {
                     projects.Remove(projectSearch);
                     Console.WriteLine("Xóa dự án thành công!");
@@ -346,6 +347,16 @@ namespace DoAnCuoiKi.Function
                             Console.WriteLine("Sau khi sắp xếp chọn");
                             HienThiDuLieuDuAn(projects);
                             break;
+                        case "c":
+                            SapXepNoiBot(ref projects, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nổi bọt");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "d":
+                            SapXepNhanh(ref projects, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nhanh");
+                            HienThiDuLieuDuAn(projects);
+                            break;
                         default:
                             SapXepChen(ref projects, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
                             Console.WriteLine("Sau khi sắp xếp chèn");
@@ -354,16 +365,184 @@ namespace DoAnCuoiKi.Function
                     }
                     break;
                 case "b":
+                    switch (thuatToanSapXep)
+                    {
+                        case "a":
+                            SapXepChen(ref projects, COLUMN_PROJECT.TEN_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "b":
+                            SapXepLuaChon(ref projects, COLUMN_PROJECT.TEN_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chọn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "c":
+                            SapXepNoiBot(ref projects, COLUMN_PROJECT.TEN_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nổi bọt");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "d":
+                            SapXepNhanh(ref projects, COLUMN_PROJECT.TEN_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nhanh");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        default:
+                            SapXepChen(ref projects, COLUMN_PROJECT.TEN_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                    }
                     break;
                 case "c":
+                    switch (thuatToanSapXep)
+                    {
+                        case "a":
+                            SapXepChen(ref projects, COLUMN_PROJECT.TRANG_THAI, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "b":
+                            SapXepLuaChon(ref projects, COLUMN_PROJECT.TRANG_THAI, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chọn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "c":
+                            SapXepNoiBot(ref projects, COLUMN_PROJECT.TRANG_THAI, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nổi bọt");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "d":
+                            SapXepNhanh(ref projects, COLUMN_PROJECT.TRANG_THAI, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nhanh");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        default:
+                            SapXepChen(ref projects, COLUMN_PROJECT.TRANG_THAI, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                    }
                     break;
                 case "d":
+                    switch (thuatToanSapXep)
+                    {
+                        case "a":
+                            SapXepChen(ref projects, COLUMN_PROJECT.NGAY_BAT_DAU, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "b":
+                            SapXepLuaChon(ref projects, COLUMN_PROJECT.NGAY_BAT_DAU, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chọn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "c":
+                            SapXepNoiBot(ref projects, COLUMN_PROJECT.NGAY_BAT_DAU, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nổi bọt");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "d":
+                            SapXepNhanh(ref projects, COLUMN_PROJECT.NGAY_BAT_DAU, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nhanh");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        default:
+                            SapXepChen(ref projects, COLUMN_PROJECT.NGAY_BAT_DAU, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                    }
                     break;
                 case "e":
+                    switch (thuatToanSapXep)
+                    {
+                        case "a":
+                            SapXepChen(ref projects, COLUMN_PROJECT.NGAY_KET_THUC, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "b":
+                            SapXepLuaChon(ref projects, COLUMN_PROJECT.NGAY_KET_THUC, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chọn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "c":
+                            SapXepNoiBot(ref projects, COLUMN_PROJECT.NGAY_KET_THUC, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nổi bọt");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "d":
+                            SapXepNhanh(ref projects, COLUMN_PROJECT.NGAY_KET_THUC, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nhanh");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        default:
+                            SapXepChen(ref projects, COLUMN_PROJECT.NGAY_KET_THUC, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                    }
                     break;
                 case "f":
+                    switch (thuatToanSapXep)
+                    {
+                        case "a":
+                            SapXepChen(ref projects, COLUMN_PROJECT.NGUOI_QUAN_LY, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "b":
+                            SapXepLuaChon(ref projects, COLUMN_PROJECT.NGUOI_QUAN_LY, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chọn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "c":
+                            SapXepNoiBot(ref projects, COLUMN_PROJECT.NGUOI_QUAN_LY, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nổi bọt");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "d":
+                            SapXepNhanh(ref projects, COLUMN_PROJECT.NGUOI_QUAN_LY, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nhanh");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        default:
+                            SapXepChen(ref projects, COLUMN_PROJECT.NGUOI_QUAN_LY, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                    }
                     break;
                 case "g":
+                    switch (thuatToanSapXep)
+                    {
+                        case "a":
+                            SapXepChen(ref projects, COLUMN_PROJECT.GIA_TIEN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "b":
+                            SapXepLuaChon(ref projects, COLUMN_PROJECT.GIA_TIEN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chọn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "c":
+                            SapXepNoiBot(ref projects, COLUMN_PROJECT.GIA_TIEN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nổi bọt");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "d":
+                            SapXepNhanh(ref projects, COLUMN_PROJECT.GIA_TIEN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp nhanh");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        default:
+                            SapXepChen(ref projects, COLUMN_PROJECT.GIA_TIEN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                    }
                     break;
                 default:
                     Console.WriteLine("Không có lựa chọn này");
@@ -440,8 +619,20 @@ namespace DoAnCuoiKi.Function
                 for (int j = i + 1; j < projects.Count; j++)
                 {
 
-                    if((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.MA_DU_AN && projects[i].ma_du_an < projects[j].ma_du_an)
-                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.MA_DU_AN && projects[i].ma_du_an > projects[j].ma_du_an
+                    if(((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.MA_DU_AN && projects[i].ma_du_an < projects[j].ma_du_an)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.MA_DU_AN && projects[i].ma_du_an > projects[j].ma_du_an)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.TEN_DU_AN && SoSanhChuoiKyTu(projects[i].ten_du_an, projects[j].ten_du_an))
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.TEN_DU_AN  && !SoSanhChuoiKyTu(projects[i].ten_du_an, projects[j].ten_du_an))
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.TRANG_THAI && SoSanhChuoiKyTu(projects[i].trang_thai, projects[j].trang_thai))
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.TRANG_THAI && !SoSanhChuoiKyTu(projects[i].trang_thai, projects[j].trang_thai))
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGAY_BAT_DAU && projects[i].ngay_bat_dau < projects[j].ngay_bat_dau)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGAY_BAT_DAU && projects[i].ngay_bat_dau > projects[j].ngay_bat_dau)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGAY_KET_THUC && projects[i].ngay_ket_thuc < projects[j].ngay_ket_thuc)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGAY_KET_THUC && projects[i].ngay_ket_thuc > projects[j].ngay_ket_thuc)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.GIA_TIEN && projects[i].gia_tien < projects[j].gia_tien)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.GIA_TIEN && projects[i].gia_tien > projects[j].gia_tien)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGUOI_QUAN_LY && SoSanhChuoiKyTu(projects[i].nguoi_quan_ly, projects[j].nguoi_quan_ly))
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGUOI_QUAN_LY && !SoSanhChuoiKyTu(projects[i].trang_thai, projects[j].trang_thai))
                     )
                     {
                         PROJECT temp;
@@ -460,12 +651,24 @@ namespace DoAnCuoiKi.Function
                 min = i;
                 for (int j = i + 1; j < projects.Count; j++)
                 {
-                    if (tangHayGiam.ToUpper() == "G" &&  column == COLUMN_PROJECT.MA_DU_AN && projects[j].ma_du_an < projects[i].ma_du_an
-                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.MA_DU_AN && projects[i].ma_du_an > projects[j].ma_du_an    
+                    if (((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.MA_DU_AN && projects[i].ma_du_an < projects[j].ma_du_an)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.MA_DU_AN && projects[i].ma_du_an > projects[j].ma_du_an)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.TEN_DU_AN && SoSanhChuoiKyTu(projects[i].ten_du_an, projects[j].ten_du_an))
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.TEN_DU_AN && !SoSanhChuoiKyTu(projects[i].ten_du_an, projects[j].ten_du_an))
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.TRANG_THAI && SoSanhChuoiKyTu(projects[i].trang_thai, projects[j].trang_thai))
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.TRANG_THAI && !SoSanhChuoiKyTu(projects[i].trang_thai, projects[j].trang_thai))
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGAY_BAT_DAU && projects[i].ngay_bat_dau < projects[j].ngay_bat_dau)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGAY_BAT_DAU && projects[i].ngay_bat_dau > projects[j].ngay_bat_dau)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGAY_KET_THUC && projects[i].ngay_ket_thuc < projects[j].ngay_ket_thuc)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGAY_KET_THUC && projects[i].ngay_ket_thuc > projects[j].ngay_ket_thuc)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.GIA_TIEN && projects[i].gia_tien < projects[j].gia_tien)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.GIA_TIEN && projects[i].gia_tien > projects[j].gia_tien)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGUOI_QUAN_LY && SoSanhChuoiKyTu(projects[i].nguoi_quan_ly, projects[j].nguoi_quan_ly))
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGUOI_QUAN_LY && !SoSanhChuoiKyTu(projects[i].trang_thai, projects[j].trang_thai))
                     )
                     {
                         min = j;
-                    }
+                    }    
                 }
 
                 PROJECT temp = projects[i];
@@ -473,58 +676,111 @@ namespace DoAnCuoiKi.Function
                 projects[min] = temp;
             }
         }
-        //public static void SapXepNoiBot(ref List<PROJECT> projects)
-        //{
-        //    for (int i = 0; i < sachs.Count; i++)
-        //    {
-        //        for (int j = 0; i < sachs.Count - i - 1; i++)
-        //        {
-        //            if (!SoSanhChuoiKyTu(sachs[j].TuaSach, sachs[j + 1].TuaSach))
-        //            {
-        //                Sach temp = sachs[i];
-        //                sachs[i] = sachs[j + 1];
-        //                sachs[j + 1] = temp;
-        //            }
-        //        }
-        //    }
+        public static void SapXepNoiBot(ref List<PROJECT> projects, string column, string tangHayGiam)
+        {
+            for (int i = 0; i < projects.Count; i++)
+            {
+                for (int j = 0; i < projects.Count - i - 1; i++)
+                {
+                    if (((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.MA_DU_AN && projects[i].ma_du_an < projects[j].ma_du_an)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.MA_DU_AN && projects[i].ma_du_an > projects[j].ma_du_an)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.TEN_DU_AN && SoSanhChuoiKyTu(projects[i].ten_du_an, projects[j].ten_du_an))
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.TEN_DU_AN && !SoSanhChuoiKyTu(projects[i].ten_du_an, projects[j].ten_du_an))
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.TRANG_THAI && SoSanhChuoiKyTu(projects[i].trang_thai, projects[j].trang_thai))
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.TRANG_THAI && !SoSanhChuoiKyTu(projects[i].trang_thai, projects[j].trang_thai))
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGAY_BAT_DAU && projects[i].ngay_bat_dau < projects[j].ngay_bat_dau)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGAY_BAT_DAU && projects[i].ngay_bat_dau > projects[j].ngay_bat_dau)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGAY_KET_THUC && projects[i].ngay_ket_thuc < projects[j].ngay_ket_thuc)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGAY_KET_THUC && projects[i].ngay_ket_thuc > projects[j].ngay_ket_thuc)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.GIA_TIEN && projects[i].gia_tien < projects[j].gia_tien)
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.GIA_TIEN && projects[i].gia_tien > projects[j].gia_tien)
+                    || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGUOI_QUAN_LY && SoSanhChuoiKyTu(projects[i].nguoi_quan_ly, projects[j].nguoi_quan_ly))
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGUOI_QUAN_LY && !SoSanhChuoiKyTu(projects[i].trang_thai, projects[j].trang_thai))
+                    )
+                    {
+                        PROJECT temp = projects[i];
+                        projects[i] = projects[j + 1];
+                        projects[j + 1] = temp;
+                    }
+                }
+            }
 
-        //}
-        //public static void SapXepNhanh(ref List<PROJECT> projects)
-        //{
+        }
+        static void SapXepNhanh(ref List<PROJECT> projects, string column, string tangHayGiam, int low = 0, int high = 0)
+        {
+            if (low < high)
+            {
+                int pi = Partition(ref projects, low, high, column, tangHayGiam);
 
-        //}
-        //static void QuickSort(ref List<Sach> sachs, int low, int high)
-        //{
-        //    if (low < high)
-        //    {
-        //        int pi = Partition(ref sachs, low, high);
+                SapXepNhanh(ref projects, column, tangHayGiam, low, pi - 1 );
+                SapXepNhanh(ref projects, column, tangHayGiam, pi + 1, high);
+            }
+        }
+        static int Partition(ref List<PROJECT> projects, int low, int high, string column, string tangHayGiam)
+        {
+            int pivotInt = 0;
+            double pivotDouble = 0;
+            string pivotStr = "";
+            DateTime pivotDt = new DateTime();
+            if(column == COLUMN_PROJECT.MA_DU_AN)
+            {
+                pivotInt = projects[high].ma_du_an;
+            }else if(column == COLUMN_PROJECT.TEN_DU_AN)
+            {
+                pivotStr = projects[high].ten_du_an;
+            }else if(column == COLUMN_PROJECT.TRANG_THAI)
+            {
+                pivotStr = projects[high].trang_thai;
+            }else if(column == COLUMN_PROJECT.NGAY_BAT_DAU)
+            {
+                pivotDt = projects[high].ngay_bat_dau;
+            }else if(column == COLUMN_PROJECT.NGAY_KET_THUC)
+            {
+                pivotDt = projects[high].ngay_ket_thuc;
+            }
+            else if(column == COLUMN_PROJECT.GIA_TIEN)
+            {
+                pivotDouble = projects[high].gia_tien;
+            }
+            else if(column == COLUMN_PROJECT.NGUOI_QUAN_LY)
+            {
+                pivotStr = projects[high].nguoi_quan_ly;
+            }    
 
-        //        QuickSort(ref sachs, low, pi - 1);
-        //        QuickSort(ref sachs, pi + 1, high);
-        //    }
-        //}
-        //static int Partition(ref List<Sach> sachs, int low, int high)
-        //{
-        //    int pivot = sachs[high].Gia;
+            int i = (low - 1);
+            for (int j = low; j < high; j++)
+            {
+                if (((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.MA_DU_AN && projects[j].ma_du_an < pivotInt)
+                || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.MA_DU_AN && projects[j].ma_du_an > pivotInt)
+                || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.TEN_DU_AN && SoSanhChuoiKyTu(projects[j].ten_du_an, pivotStr))
+                || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.TEN_DU_AN && !SoSanhChuoiKyTu(projects[j].ten_du_an, pivotStr))
+                || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.TRANG_THAI && SoSanhChuoiKyTu(projects[j].trang_thai, pivotStr))
+                || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.TRANG_THAI && !SoSanhChuoiKyTu(projects[j].trang_thai, pivotStr))
+                || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGAY_BAT_DAU && projects[j].ngay_bat_dau < pivotDt)
+                || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGAY_BAT_DAU && projects[j].ngay_bat_dau > pivotDt)
+                || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGAY_KET_THUC && projects[j].ngay_ket_thuc < pivotDt)
+                || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGAY_KET_THUC && projects[j].ngay_ket_thuc > pivotDt)
+                || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.GIA_TIEN && projects[j].gia_tien < pivotDouble)
+                || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.GIA_TIEN && projects[j].gia_tien > pivotDouble)
+                || ((tangHayGiam.ToUpper() == "G" && column == COLUMN_PROJECT.NGUOI_QUAN_LY && SoSanhChuoiKyTu(projects[j].nguoi_quan_ly, pivotStr))
+                || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.NGUOI_QUAN_LY && !SoSanhChuoiKyTu(projects[j].nguoi_quan_ly, pivotStr))
+                )
+                {
+                    i++;
 
-        //    int i = (low - 1);
-        //    for (int j = low; j < high; j++)
-        //    {
-        //        if (sachs[j].Gia > pivot)
-        //        {
-        //            i++;
+                    PROJECT temp = projects[i];
+                    projects[i] = projects[j];
+                    projects[j] = temp;
+                }
 
-        //            Sach temp = sachs[i];
-        //            sachs[i] = sachs[j];
-        //            sachs[j] = temp;
-        //        }
-        //    }
-        //    Sach temp1 = sachs[i + 1];
-        //    sachs[i + 1] = sachs[high];
-        //    sachs[high] = temp1;
+               
+            }
+            PROJECT temp1 = projects[i + 1];
+            projects[i + 1] = projects[high];
+            projects[high] = temp1;
 
-        //    return i + 1;
-        //}
+            return i + 1;
+        }
         static bool SoSanhChuoiKyTu(string a, string b)
         {
             int count = 0;

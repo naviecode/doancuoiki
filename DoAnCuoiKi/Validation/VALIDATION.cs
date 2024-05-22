@@ -134,7 +134,7 @@ namespace DoAnCuoiKi.Validation
 
             if (reuslt < fromDate)
             {
-                Console.WriteLine("{0} {1} hơn {2}!", fromDateStr, operatorStr, toDateStr);
+                Console.WriteLine("{0} không được {1} hơn {2}!", fromDateStr, operatorStr, toDateStr);
                 goto nhaplai;
             }
 

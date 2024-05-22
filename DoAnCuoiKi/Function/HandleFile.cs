@@ -159,6 +159,11 @@ namespace DoAnCuoiKi.Function
             {
                 lines = System.IO.File.ReadAllLines(filePath);
                 string[] data;
+                if(projects.Count == 0)
+                {
+                    Console.WriteLine("Hiện chưa có dự án nào để thêm công việc");
+                    return;
+                }    
 
                 Console.WriteLine("*-----------------------------------------------------------------------------------*");
                 Console.WriteLine("|                                 CÁC DỰ ÁN HIỆN CÓ                                 |");
@@ -243,16 +248,17 @@ namespace DoAnCuoiKi.Function
            
             IEnumerable<string> filePathsReadProject = Directory.EnumerateFiles(PATH.FilePathProjectRead);
             IEnumerable<string> filePathsReadTask = Directory.EnumerateFiles(PATH.FilePathTaskRead);
-            Console.WriteLine("Danh sách file đang có để cập nhâp dữ liệu: ");
+            Console.WriteLine("Danh sách file đang có để cập nhâp dữ liệu dự án: ");
             foreach (string filePathProject in filePathsReadProject)
             {
                 string fileName = Path.GetFileName(filePathProject);
-                Console.WriteLine(fileName);
+                Console.WriteLine("\t {0}",fileName);
             }
+            Console.WriteLine("Danh sách file đang có để cập nhâp dữ liệu công việc: ");
             foreach (string filePathTask in filePathsReadTask)
             {
                 string fileName = Path.GetFileName(filePathTask);
-                Console.WriteLine(fileName);
+                Console.WriteLine("\t {0}",fileName);
             }
         }
         public static void GhiFileTxtCongViec(List<TASK> tasks)

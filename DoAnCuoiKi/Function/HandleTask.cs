@@ -20,7 +20,7 @@ namespace DoAnCuoiKi.Function
             Console.WriteLine("*-----------------------------------------------------------------------------------*");
             Console.WriteLine("|                                 CÁC DỰ ÁN HIỆN CÓ                                 |");
             Console.WriteLine("*-----------------------------------------------------------------------------------*");
-            Console.WriteLine("| {0,-6} | {1,-12} | {2,-26} | {3,-12} | {4,-12} |", "STT", "Mã dự án", "Tên dự án", "Ngày bắt đầu", "Ngày kết thúc");
+            Console.WriteLine("| {0,-6} | {1,-12} | {2,-26} | {3,-12} | {4,-12} |", "STT", COLUMN_PROJECT.MA_DU_AN, COLUMN_PROJECT.TEN_DU_AN, COLUMN_PROJECT.NGAY_BAT_DAU, COLUMN_PROJECT.NGAY_KET_THUC);
             Console.WriteLine("*-----------------------------------------------------------------------------------*");
 
             foreach (PROJECT prj in projects)
@@ -57,17 +57,17 @@ namespace DoAnCuoiKi.Function
         {
             int stt = 1;
             string status = "";
-            Console.WriteLine("*-------------------------------------------------------------------------------------------------------------------------------------*");
-            Console.WriteLine("|                                                    THÔNG TIN CHI TIẾT CÁC CÔNG VIỆC                                                 |");
-            Console.WriteLine("*-------------------------------------------------------------------------------------------------------------------------------------*");
-            Console.WriteLine("| {0,-6} | {1,-26} | {2,-26} | {3,-12} | {4,-12} | {5,-12} | {6,-12} |", "STT", "Tên dự án", "Tên công việc", "Người làm", "Thời gian bắt đầu", "Thời gian hoàn thành", "Trạng thái");
-            Console.WriteLine("*-------------------------------------------------------------------------------------------------------------------------------------*");
+            Console.WriteLine("*-----------------------------------------------------------------------------------------------------------------------------------------*");
+            Console.WriteLine("|                                                    THÔNG TIN CHI TIẾT CÁC CÔNG VIỆC                                                     |");
+            Console.WriteLine("*-----------------------------------------------------------------------------------------------------------------------------------------*");
+            Console.WriteLine("| {0,-12} | {1,-26} | {2,-26} | {3,-12} | {4,-14} | {5,-14} | {6,-12} |", COLUMN_TASK.MA_CONG_VIEC, COLUMN_TASK.TEN_DU_AN, COLUMN_TASK.NOI_DUNG, COLUMN_TASK.NGUOI_LAM, COLUMN_TASK.NGAY_BAT_DAU, COLUMN_TASK.NGAY_KET_THUC, COLUMN_TASK.TRANG_THAI);
+            Console.WriteLine("*-----------------------------------------------------------------------------------------------------------------------------------------*");
             foreach (TASK task in tasks)
             {
                 if (task.ngay_bat_dau_lam > task.thoi_han_hoan_thanh) status = STATUS.DELAY;
                 else status = task.trang_thai_cong_viec; 
-                Console.WriteLine("| {0,-6} | {1,-26} | {2,-26} | {3,-12} | {4,-12} | {5,-12} |", stt, task.du_an_dang_thuc_hien, task.noi_dung_nhiem_vu, task.nguoi_lam, task.ngay_bat_dau_lam.ToShortDateString(), task.thoi_han_hoan_thanh.ToShortDateString(), task.trang_thai_cong_viec);
-                Console.WriteLine("*-------------------------------------------------------------------------------------------------------------------------------------*");
+                Console.WriteLine("| {0,-12} | {1,-26} | {2,-26} | {3,-12} | {4,-14} | {5,-14} | {6,-12} |", task.ma_cong_viec, task.du_an_dang_thuc_hien, task.noi_dung_nhiem_vu, task.nguoi_lam, task.ngay_bat_dau_lam.ToShortDateString(), task.thoi_han_hoan_thanh.ToShortDateString(), status);
+                Console.WriteLine("*-----------------------------------------------------------------------------------------------------------------------------------------*");
                 stt++;
             }
         }
@@ -152,7 +152,7 @@ namespace DoAnCuoiKi.Function
             if (tasks.Contains(taskSearch))
             {
                 ConsoleKeyInfo confirm = VALIDATION.NhapOption("Bạn có chắc muốn xóa công việc này không (Y: Có | N - Ký tự khác: không) ?");
-                if (confirm.KeyChar != 'Y')
+                if (Convert.ToString(confirm.KeyChar).Trim().ToLower() == "Y")
                 {
                     tasks.Remove(taskSearch);
                     Console.WriteLine("Xóa công việc thành công!");

@@ -12,7 +12,7 @@ namespace DoAnCuoiKi.Const
         public const string TEN_DU_AN = "TÊN DỰ ÁN THAM GIA";
         public const string NOI_DUNG = "NỘI DUNG NHIỆM VỤ";
         public const string NGUOI_LAM = "NGƯỜI LÀM";
-        public const string TRANG_THAI = "TRANG_THAI";
+        public const string TRANG_THAI = "TRẠNG THÁI";
         public const string NGAY_BAT_DAU = "NGÀY BẮT ĐẦU";
         public const string NGAY_KET_THUC = "NGÀY HOÀN THÀNH";
     }
