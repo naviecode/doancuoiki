@@ -338,12 +338,17 @@ namespace DoAnCuoiKi.Function
                     {
                         case "a":
                             SapXepChen(ref projects, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
-                            Console.WriteLine("Sau khi sắp xếp");
+                            Console.WriteLine("Sau khi sắp xếp chèn");
+                            HienThiDuLieuDuAn(projects);
+                            break;
+                        case "b":
+                            SapXepLuaChon(ref projects, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
+                            Console.WriteLine("Sau khi sắp xếp chọn");
                             HienThiDuLieuDuAn(projects);
                             break;
                         default:
                             SapXepChen(ref projects, COLUMN_PROJECT.MA_DU_AN, tangHayGiam);
-                            Console.WriteLine("Sau khi sắp xếp");
+                            Console.WriteLine("Sau khi sắp xếp chèn");
                             HienThiDuLieuDuAn(projects);
                             break;
                     }
@@ -447,25 +452,27 @@ namespace DoAnCuoiKi.Function
                 }
             }
         }
-        //public static void SapXepLuaChon(ref List<PROJECT> projects)
-        //{
-        //    int min;
-        //    for (int i = 0; i < sachs.Count - 1; i++)
-        //    {
-        //        min = i;
-        //        for (int j = i + 1; j < sachs.Count; j++)
-        //        {
-        //            if (!SoSanhChuoiKyTu(sachs[i].MaSach, sachs[j].MaSach))
-        //            {
-        //                min = j;
-        //            }
-        //        }
+        public static void SapXepLuaChon(ref List<PROJECT> projects, string column, string tangHayGiam)
+        {
+            int min;
+            for (int i = 0; i < projects.Count - 1; i++)
+            {
+                min = i;
+                for (int j = i + 1; j < projects.Count; j++)
+                {
+                    if (tangHayGiam.ToUpper() == "G" &&  column == COLUMN_PROJECT.MA_DU_AN && projects[j].ma_du_an < projects[i].ma_du_an
+                    || (tangHayGiam.ToUpper() == "T" || tangHayGiam.ToUpper() != "G") && column == COLUMN_PROJECT.MA_DU_AN && projects[i].ma_du_an > projects[j].ma_du_an    
+                    )
+                    {
+                        min = j;
+                    }
+                }
 
-        //        Sach temp = sachs[i];
-        //        sachs[i] = sachs[min];
-        //        sachs[min] = temp;
-        //    }
-        //}
+                PROJECT temp = projects[i];
+                projects[i] = projects[min];
+                projects[min] = temp;
+            }
+        }
         //public static void SapXepNoiBot(ref List<PROJECT> projects)
         //{
         //    for (int i = 0; i < sachs.Count; i++)
