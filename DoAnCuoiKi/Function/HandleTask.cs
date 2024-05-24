@@ -152,7 +152,7 @@ namespace DoAnCuoiKi.Function
             if (tasks.Contains(taskSearch))
             {
                 ConsoleKeyInfo confirm = VALIDATION.NhapOption("Bạn có chắc muốn xóa công việc này không (Y: Có | N - Ký tự khác: không) ?");
-                if (Convert.ToString(confirm.KeyChar).Trim().ToLower() == "Y")
+                if (Convert.ToString(confirm.KeyChar).Trim().ToLower() == "y")
                 {
                     tasks.Remove(taskSearch);
                     Console.WriteLine("Xóa công việc thành công!");
