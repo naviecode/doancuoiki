@@ -17,7 +17,7 @@ namespace DoAnCuoiKi.Validation
         {
             int result = 0;
             bool ktr = false;
-        nhaplai:
+            nhaplai:
             Console.Write("{0}", text);
             ktr = int.TryParse(Console.ReadLine(), out result);
             if (!ktr)
@@ -111,7 +111,7 @@ namespace DoAnCuoiKi.Validation
 
             return reuslt;
         }
-        public static DateTime SoSanhNgay(DateTime fromDate,string text = null, string fromDateStr = null, string toDateStr = null, string operatorStr = null)
+        public static DateTime SoSanhNgay(DateTime fromDate ,string text = null, string fromDateStr = null, string toDateStr = null, string operatorStr = null)
         {
 
             DateTime reuslt = DateTime.Now;
@@ -140,6 +140,7 @@ namespace DoAnCuoiKi.Validation
 
             return reuslt;
         }
+
         public static bool isDate(string data)
         {
             DateTime reuslt = DateTime.Now;
@@ -156,7 +157,6 @@ namespace DoAnCuoiKi.Validation
 
             return checkDate;
         }
-
         public static bool isNumberDouble(string data)
         {
             return double.TryParse(data, out double a);
@@ -165,6 +165,8 @@ namespace DoAnCuoiKi.Validation
         {
             return int.TryParse(data, out int a); ;
         }
+     
+      
         public static DateTime converStringToDateTime(string data)
         {
             string[] arrStr = data.Split("/");

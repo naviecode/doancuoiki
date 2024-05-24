@@ -14,7 +14,7 @@ namespace DoAnCuoiKi.Function
     {
         public static void DocFileTxtDuAn(List<PROJECT> projects)
         {
-            DanhSachFile();
+            DanhSachFile("project");
             bool checkDataErr = false;
             string messErr = "Dòng ";
             string[] lines;
@@ -24,20 +24,30 @@ namespace DoAnCuoiKi.Function
             {
                 lines = System.IO.File.ReadAllLines(filePath);
                 string[] data;
-
+          
                 //validation
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    data = lines[i].Split(",");
+                    data = lines[i].Split(","); 
                     if (!VALIDATION.isNumberInt(data[0].ToString()) || !VALIDATION.isDate(data[3].ToString()) || !VALIDATION.isDate(data[4].ToString()) || !VALIDATION.isNumberDouble(data[6].ToString()))
                     {
                         messErr += (i + 1) + ": ";
                         checkDataErr = true;
                     }
+
                     if (!VALIDATION.isNumberInt(data[0].ToString()))
                     {
                         messErr += "Mã dự án không đúng định dạng";
                     }
+                    else
+                    {
+                        PROJECT timKiem = projects.Find(x => x.ma_du_an == int.Parse(data[0].ToString()));
+                        if (projects.Contains(timKiem))
+                        {
+                            messErr += "\n Mã dự án đã tồn tại";
+                        }
+                    }
+
                     if (!VALIDATION.isDate(data[3].ToString()))
                     {
                         messErr += "\n Ngày bắt đầu không đúng định dạng";
@@ -95,8 +105,13 @@ namespace DoAnCuoiKi.Function
             {
                 Console.WriteLine("Không có dữ liệu để ghi file!");
                 return;
-            } 
-                
+            }
+
+            if (!System.IO.Directory.Exists(PATH.FilePathFileAll + "write_file_project"))
+            {
+                System.IO.Directory.CreateDirectory(PATH.FilePathFileAll + "write_file_project");
+            }
+
             if (System.IO.File.Exists(fileLPath))
             {
                 FileStream fs = new FileStream(fileLPath, FileMode.Open);
@@ -147,7 +162,7 @@ namespace DoAnCuoiKi.Function
         }
         public static void DocFileTxtCongViec(List<PROJECT> projects, List<TASK> tasks)
         {
-            DanhSachFile();
+            DanhSachFile("task");
             bool checkDataErr = false;
             string messErr = "Dòng ";
             string[] lines; 
@@ -186,7 +201,9 @@ namespace DoAnCuoiKi.Function
                         for (int i = 0; i < lines.Length; i++)
                         {
                             data = lines[i].Split(",");
-                            if (!VALIDATION.isNumberInt(data[0].ToString()) || !VALIDATION.isDate(data[3].ToString()) || !VALIDATION.isDate(data[4].ToString()))
+                            if (!VALIDATION.isNumberInt(data[0].ToString()) 
+                            || !VALIDATION.isDate(data[3].ToString()) 
+                            || !VALIDATION.isDate(data[4].ToString()))
                             {
                                 messErr += (i + 1) + ": ";
                                 checkDataErr = true;
@@ -243,23 +260,32 @@ namespace DoAnCuoiKi.Function
             }
         }
 
-        public static void DanhSachFile()
+        public static void DanhSachFile(string type = "")
         {
            
-            IEnumerable<string> filePathsReadProject = Directory.EnumerateFiles(PATH.FilePathProjectRead);
-            IEnumerable<string> filePathsReadTask = Directory.EnumerateFiles(PATH.FilePathTaskRead);
-            Console.WriteLine("Danh sách file đang có để cập nhâp dữ liệu dự án: ");
-            foreach (string filePathProject in filePathsReadProject)
+            if(type == "project")
             {
-                string fileName = Path.GetFileName(filePathProject);
-                Console.WriteLine("\t {0}",fileName);
+                IEnumerable<string> filePathsReadProject = Directory.EnumerateFiles(PATH.FilePathProjectRead);
+                Console.WriteLine("Danh sách file đang có để cập nhâp dữ liệu dự án: ");
+                foreach (string filePathProject in filePathsReadProject)
+                {
+                    string fileName = Path.GetFileName(filePathProject);
+                    Console.WriteLine("{0}", fileName);
+                }
             }
-            Console.WriteLine("Danh sách file đang có để cập nhâp dữ liệu công việc: ");
-            foreach (string filePathTask in filePathsReadTask)
+            else
             {
-                string fileName = Path.GetFileName(filePathTask);
-                Console.WriteLine("\t {0}",fileName);
+                IEnumerable<string> filePathsReadTask = Directory.EnumerateFiles(PATH.FilePathTaskRead);
+                Console.WriteLine("Danh sách file đang có để cập nhâp dữ liệu công việc: ");
+                foreach (string filePathTask in filePathsReadTask)
+                {
+                    string fileName = Path.GetFileName(filePathTask);
+                    Console.WriteLine("{0}", fileName);
+                }
+
             }
+
+            
         }
         public static void GhiFileTxtCongViec(List<TASK> tasks)
         {
@@ -271,6 +297,10 @@ namespace DoAnCuoiKi.Function
             {
                 Console.WriteLine("Không có dữ liệu để ghi file!");
                 return;
+            }
+            if (!System.IO.Directory.Exists(PATH.FilePathFileAll + "write_file_task"))
+            {
+                System.IO.Directory.CreateDirectory(PATH.FilePathFileAll + "write_file_task");
             }
             if (System.IO.File.Exists(fileLPath))
             {
