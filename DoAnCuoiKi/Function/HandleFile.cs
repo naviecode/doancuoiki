@@ -48,6 +48,7 @@ namespace DoAnCuoiKi.Function
                         }
                     }
 
+
                     if (!VALIDATION.isDate(data[3].ToString()))
                     {
                         messErr += "\n Ngày bắt đầu không đúng định dạng";

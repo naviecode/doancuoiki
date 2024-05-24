@@ -82,9 +82,6 @@ namespace DoAnCuoiKi.Function
                 Console.WriteLine("|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|");
             }
 
-            //cần làm
-            //Console.WriteLine("Xem chi tiết công việc của dự án");
-
         }
         public static void CapNhapDuAn(List<PROJECT> projects)
         {
