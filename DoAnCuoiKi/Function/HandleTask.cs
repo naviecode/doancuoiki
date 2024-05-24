@@ -182,7 +182,7 @@ namespace DoAnCuoiKi.Function
             Console.WriteLine("f. Ngày kết thúc");
             luaChonTimKiem = VALIDATION.KiemTraDoDaiNhapLieu("Nhập lựa chọn: ", true);
             thuatToanTimKiem = VALIDATION.KiemTraDoDaiNhapLieu("Nhập chọn thuật toán tìm kiếm bạn muốn dùng (a: Tuần tự | b: Nhị phân | Khác: tuần tự): ", true);
-            switch (luaChonTimKiem.ToUpper())
+            switch (luaChonTimKiem.ToLower())
             {
                 case "a":
                     int maDuAnSearch = VALIDATION.KiemTraDuLieuSo("Nhập mã công việc cần tìm: ");
@@ -426,20 +426,20 @@ namespace DoAnCuoiKi.Function
             while (left <= right)
             {
                 mid = (left + right) / 2;
-                if ((column == COLUMN_PROJECT.MA_DU_AN && tasks[mid].ma_cong_viec == int.Parse(timKiem))
-                || (column == COLUMN_PROJECT.TEN_DU_AN && tasks[mid].du_an_dang_thuc_hien == timKiem.Trim())
-                || (column == COLUMN_PROJECT.TRANG_THAI && tasks[mid].trang_thai_cong_viec == timKiem.Trim())
-                || (column == COLUMN_PROJECT.NGUOI_QUAN_LY && tasks[mid].nguoi_lam == timKiem.Trim())
+                if ((column == COLUMN_TASK.MA_CONG_VIEC && tasks[mid].ma_cong_viec == int.Parse(timKiem))
+                || (column == COLUMN_TASK.TEN_DU_AN && tasks[mid].du_an_dang_thuc_hien == timKiem.Trim())
+                || (column == COLUMN_TASK.TRANG_THAI && tasks[mid].trang_thai_cong_viec == timKiem.Trim())
+                || (column == COLUMN_TASK.NGUOI_LAM && tasks[mid].nguoi_lam == timKiem.Trim())
                 )
                 {
                     result.Add(tasks[mid]);
                     break;
 
                 }
-                else if ((column == COLUMN_PROJECT.MA_DU_AN && tasks[mid].ma_du_an < int.Parse(timKiem))
-                || (column == COLUMN_PROJECT.TEN_DU_AN && SoSanhChuoiKyTu(tasks[mid].du_an_dang_thuc_hien, timKiem))
-                || (column == COLUMN_PROJECT.TRANG_THAI && SoSanhChuoiKyTu(tasks[mid].trang_thai_cong_viec, timKiem))
-                || (column == COLUMN_PROJECT.NGUOI_QUAN_LY && SoSanhChuoiKyTu(tasks[mid].nguoi_lam, timKiem))
+                else if ((column == COLUMN_TASK.MA_CONG_VIEC && tasks[mid].ma_du_an < int.Parse(timKiem))
+                || (column == COLUMN_TASK.TEN_DU_AN && SoSanhChuoiKyTu(tasks[mid].du_an_dang_thuc_hien, timKiem))
+                || (column == COLUMN_TASK.TRANG_THAI && SoSanhChuoiKyTu(tasks[mid].trang_thai_cong_viec, timKiem))
+                || (column == COLUMN_TASK.NGUOI_LAM && SoSanhChuoiKyTu(tasks[mid].nguoi_lam, timKiem))
                 )
                 {
                     left = mid + 1;
